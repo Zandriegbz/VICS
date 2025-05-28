@@ -1,0 +1,225 @@
+<!-- Inserted here -->
+
+<div class="dashboard-overview">
+  
+  <!-- Enhanced Main Chart Container - Full Width -->
+  <div class="main-chart-container">
+    <!-- Chart Header with Controls -->
+    <div class="chart-header">
+      <div class="chart-title-section">
+        <h3 class="chart-title">
+          <i class="fas fa-chart-line chart-icon"></i>
+          Total Visitors Trend
+        </h3>
+        <div class="chart-subtitle">Weekly Performance Overview</div>
+      </div>
+      
+      <div class="chart-controls">
+        <!-- Time Period Selector -->
+        <div class="time-period-selector">
+          <button 
+            *ngFor="let period of timePeriods" 
+            class="period-btn"
+            [class.active]="period.active"
+            (click)="onPeriodChange(period.value)">
+            {{ period.label }}
+          </button>
+        </div>
+        
+        <!-- Export Button -->
+        <button class="export-btn" (click)="exportChart()">
+          <i class="fas fa-download"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Weekly Summary Stats Row -->
+    <div class="weekly-summary">
+      <!-- Today's Visitors moved here with the same style as other summary items -->
+      <div class="summary-item">
+        <span class="summary-label">Today's Visitors</span>
+        <span class="summary-value">{{ currentVisitors }}</span>
+        <span class="summary-change positive">
+          <i class="fas fa-arrow-up"></i> {{ percentageChange }}
+        </span>
+      </div>
+      
+      <div class="summary-item">
+        <span class="summary-label">Weekly Total</span>
+        <span class="summary-value">{{ weeklyStats.total }}</span>
+        <span class="summary-change positive">+{{ weeklyGrowth.toFixed(1) }}%</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Daily Average</span>
+        <span class="summary-value">{{ weeklyStats.average }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Target Achievement</span>
+        <span class="summary-value">{{ weeklyStats.achievement }}%</span>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="weeklyStats.achievement"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Chart with Grid and Values -->
+    <div class="enhanced-chart">
+      <div class="chart-grid">
+        <!-- Y-axis labels -->
+        <div class="y-axis-labels">
+          <span class="y-label">150</span>
+          <span class="y-label">100</span>
+          <span class="y-label">50</span>
+          <span class="y-label">0</span>
+        </div>
+        
+        <!-- Chart area with grid lines -->
+        <div class="chart-area">
+          <div class="grid-lines">
+            <div class="grid-line" *ngFor="let line of [1,2,3,4]"></div>
+          </div>
+          
+          <!-- Enhanced Chart Bars -->
+          <div class="chart-bars">
+            <div 
+              *ngFor="let day of totalVisitorsTrendData; let i = index"
+              class="chart-bar-container"
+              (click)="onBarClick(day)">
+              
+              <!-- Value display above bar -->
+              <div class="bar-value">{{ day.value }}</div>
+              
+              <!-- Change indicator -->
+              <div class="bar-change" [ngClass]="day.status">
+                <i class="fas" [ngClass]="{
+                  'fa-arrow-up': day.change && day.change > 0,
+                  'fa-arrow-down': day.change && day.change < 0,
+                  'fa-equals': day.change === 0
+                }"></i>
+                {{ day.change && day.change > 0 ? '+' : '' }}{{ day.change }}%
+              </div>
+              
+              <!-- The actual bar -->
+              <div 
+                class="chart-bar" 
+                [ngClass]="day.status"
+                [style.height.px]="(day.value / 150) * 200"
+                [attr.data-value]="day.value">
+              </div>
+              
+              <!-- Day label -->
+              <div class="bar-label">{{ day.name }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Legend -->
+    <div class="chart-legend">
+      <div class="legend-items">
+        <div class="legend-item" *ngFor="let item of chartLegend">
+          <i [class]="item.icon" [style.color]="item.color"></i>
+          <span class="legend-label">{{ item.label }}</span>
+        </div>
+      </div>
+      <div class="chart-actions">
+        <button class="action-btn" title="Refresh Data">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+        <button class="action-btn" title="Full Screen">
+          <i class="fas fa-expand"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secondary Items Grid -->
+  <div class="secondary-items-grid">
+    
+    <!-- Visitor Breakdown Donut Chart -->
+    <div class="card card-box chart-container">
+      <div class="card-body">
+        <h3 class="chart-title">Visitor Breakdown</h3>
+        <!-- Custom Donut Chart Placeholder -->
+        <div class="custom-donut-chart">
+          <div class="donut-chart">
+            <div class="donut-segment segment-1" style="--percentage: 27;"></div>
+            <div class="donut-segment segment-2" style="--percentage: 17;"></div>
+            <div class="donut-segment segment-3" style="--percentage: 56;"></div>
+            <div class="donut-center">
+              <span class="total-count">{{ currentVisitors }}</span>
+              <span class="total-label">Total</span>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-item">
+              <span class="legend-color bg-primary"></span>
+              <span class="legend-text">HR Visitors (34)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color bg-info"></span>
+              <span class="legend-text">Mayor's Office (22)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color bg-success"></span>
+              <span class="legend-text">Others (72)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed Meetings Card (Enhanced) -->
+    <div class="card card-box">
+      <div class="card-body">
+        <div class="card-icon-container bg-warning">
+          <i class="fas fa-check-circle icon text-white"></i>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">Completed Meetings</h3>
+          <p class="card-value">18</p>
+          <div class="card-stats">
+            <span class="trend-stable"><i class="fas fa-equals"></i> Same as yesterday</span>
+          </div>
+        </div>
+        <a href="#" class="btn btn-primary mt-auto">View Details <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+
+    <!-- Defaulted Visitors Card (Enhanced) -->
+    <div class="card card-box critical-card">
+      <div class="card-body">
+        <div class="card-icon-container bg-danger">
+          <i class="fas fa-times-circle icon text-white"></i>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">Defaulted Visitors</h3>
+          <p class="card-value">5</p>
+          <div class="card-stats">
+            <span class="trend-down"><i class="fas fa-arrow-down"></i> 2% from yesterday</span>
+          </div>
+        </div>
+        <a href="#" class="btn btn-primary mt-auto">View Details <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+
+    <!-- Others - Coming Soon Card -->
+    <div class="card card-box coming-soon-card">
+      <div class="card-body">
+        <div class="card-icon-container bg-secondary">
+          <i class="fas fa-ellipsis-h icon text-white"></i>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">Others</h3>
+          <p class="card-value">Coming Soon</p>
+          <div class="card-stats">
+            <span class="trend-neutral"><i class="fas fa-info-circle"></i> New features planned</span>
+          </div>
+        </div>
+        <a href="#" class="btn btn-primary mt-auto disabled">Learn More <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+
+  </div>
+</div>

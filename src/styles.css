@@ -1,0 +1,39 @@
+html, body {
+  margin:0;
+  padding:0;
+  height:100%;
+  font-family: var(--bs-font-sans-serif, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif); /* Default to theme font */
+  background-color: #ffeff1; /* Consistent background color across all pages */
+  color: var(--bs-body-color, #212529);
+}
+
+/* Define maroon theme colors */
+:root {
+  --bs-primary: #B0303D;
+  --bs-primary-dark: #8C2631;
+  --bs-primary-light: #E38383;
+  --bs-primary-bg-light: #F5D0D4;
+  --bs-primary-rgb: 176, 48, 61;
+  --bs-body-bg: #ffeff1;
+  --bs-font-sans-serif: 'Segoe UI', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --bs-content-bg: #ffeff1;
+  --bs-navbar-bg: #B0303D;
+}
+
+/* Ensure consistent background across all main containers */
+.admin-container,
+.layout-page,
+.content-wrapper,
+app-root {
+  background-color: #ffeff1 !important;
+}
+
+/* Example of how you might define CSS variables if not in core.css,
+   but ideally, core.css provides these. Comment out if theme provides them. */
+/*
+:root {
+  --bs-primary: #7367F0;
+  --bs-body-bg: #F8F7FA;
+  --bs-font-sans-serif: 'Public Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+*/

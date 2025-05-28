@@ -1,0 +1,364 @@
+/* .content styles are now handled by admin-layout.component.css */
+/* The margin inconsistencies (220px vs 240px) are resolved by the layout component */
+/* ========================================================================= */
+.visitor-logbook {
+  max-width: 1200px; /* Limit max width for better readability */
+  margin: 0 auto 3rem auto; /* Center the content and add bottom margin */
+}
+
+.visitor-logbook h2 {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 2.5rem; /* More space below title */
+  font-size: 1.8rem; /* Slightly larger title */
+}
+
+.visitor-card.card {
+  background-color: white;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px; /* More rounded corners */
+  margin-bottom: 1.25rem; /* Refined spacing between cards */
+  overflow: hidden;
+  transition: all 0.3s ease; /* Smoother transition */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04); /* Subtle default shadow */
+}
+
+.visitor-card.card:hover {
+  transform: translateY(-2px); /* Subtle lift effect */
+  box-shadow: 0 8px 25px rgba(176, 48, 61, 0.12); /* Enhanced hover shadow */
+  border-color: #F5D0D4; /* Light accent border on hover */
+}
+
+/* Header: Two columns: 70% left, 30% right */
+.visitor-header.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.75rem; /* More generous padding */
+  background: #fafafa; /* Slightly warmer background */
+  color: #333;
+  cursor: pointer;
+  border-bottom: none; /* Remove default border */
+  transition: background-color 0.2s ease;
+}
+
+.visitor-card:not(:last-child) .visitor-header.card-header {
+   border-bottom: none; /* Remove borders between headers */
+}
+
+.visitor-card .visitor-details + .visitor-header.card-header {
+    border-top: 1px solid #f0f0f0;
+}
+
+.visitor-info {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Increased gap */
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.visitor-info strong {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #2c3e50; /* Darker, more readable color */
+}
+
+/* Status badge styling */
+.visitor-status.badge {
+  text-align: center;
+  padding: 0.5em 1em; /* More padding for badges */
+  font-weight: 600;
+  font-size: 0.75rem;
+  border-radius: 20px; /* More rounded badges */
+  text-transform: uppercase;
+  letter-spacing: 0.5px; /* Better letter spacing */
+}
+
+/* Print Status Badge Styles */
+.badge-success {
+  background-color: #28a745 !important; /* Green for Printed */
+  color: white !important;
+}
+
+.badge-warning {
+  background-color: #ffc107 !important; /* Yellow/Orange for Not Printed */
+  color: white !important; /* White text for Not Printed */
+}
+
+/* Details section styling */
+.visitor-details.card-body {
+  padding: 2rem 1.75rem; /* Increased padding for details */
+  background-color: #fff;
+  color: #333;
+  border-top: 1px solid #f0f0f0; /* Subtle separator */
+}
+
+.visitor-details-content .row {
+  margin-bottom: 1.5rem; /* More space before buttons */
+}
+
+.visitor-details-content p {
+  margin-bottom: 1rem; /* Better spacing between detail lines */
+  font-size: 0.9rem;
+  line-height: 1.5; /* Better line height */
+}
+
+.visitor-details-content p strong {
+  min-width: 120px; /* Better alignment */
+  display: inline-block;
+  font-weight: 600;
+  color: #B0303D;
+  margin-right: 10px;
+}
+
+.visitor-actions {
+  border-top: 1px solid #f8f9fa; /* Subtle separator above buttons */
+  padding-top: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.visitor-actions .btn {
+  padding: 0.75rem 2rem; /* Larger button padding */
+  font-size: 0.95rem; /* Larger font size */
+  font-weight: 500;
+  border-radius: 6px; /* Slightly rounded buttons */
+  transition: all 0.2s ease;
+  min-width: 120px; /* Minimum width for consistency */
+}
+
+.visitor-actions .btn-outline-secondary {
+    border-color: #B0303D;
+    color: #B0303D;
+}
+
+.visitor-actions .btn-outline-secondary:hover {
+    background-color: #F5D0D4;
+    color: #8C2631;
+    border-color: #8C2631;
+    transform: translateY(-1px); /* Subtle lift on hover */
+}
+
+.visitor-actions .btn:first-child {
+    background-color: #B0303D;
+    border-color: #B0303D;
+}
+
+.visitor-actions .btn:first-child:hover {
+    background-color: #8C2631;
+    border-color: #8C2631;
+    transform: translateY(-1px); /* Subtle lift on hover */
+}
+
+/* Style for the chevron icons */
+.visitor-info .fas {
+  font-size: 0.8em;
+  margin-left: 8px;
+  color: #B0303D;
+  transition: transform 0.3s ease-in-out;
+}
+
+.visitor-info .fa-chevron-up {
+  transform: rotate(180deg);
+}
+
+/* Adding hover effect to the entire header */
+.visitor-header.card-header:hover {
+  background-color: #f5f5f5; /* Subtle hover background */
+}
+
+/* Search and Filter Styles */
+.filters-section {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e8e8e8;
+}
+
+.search-container {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #B0303D;
+  z-index: 2;
+}
+
+.search-input {
+  padding-left: 40px;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: #B0303D;
+  box-shadow: 0 0 0 0.2rem rgba(176, 48, 61, 0.1);
+}
+
+.form-control, .form-select {
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #B0303D;
+  box-shadow: 0 0 0 0.2rem rgba(176, 48, 61, 0.1);
+}
+
+/* Active filter highlighting */
+.form-control.active-filter, .form-select.active-filter {
+  border-color: #B0303D;
+  background-color: #fff5f6;
+  box-shadow: 0 0 0 0.1rem rgba(176, 48, 61, 0.15);
+}
+
+.search-input.active-filter {
+  border-color: #B0303D;
+  background-color: #fff5f6;
+  box-shadow: 0 0 0 0.1rem rgba(176, 48, 61, 0.15);
+}
+
+/* Active filter icon color change */
+.search-container.active .search-icon {
+  color: #8C2631;
+}
+
+.results-summary {
+  font-style: italic;
+}
+
+/* Pagination Styles */
+.pagination-section {
+  background-color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e8e8e8;
+  margin-top: 1.5rem;
+}
+
+.pagination-controls .btn {
+  height: 32px;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.pagination-controls .btn-outline-secondary {
+  border-color: #B0303D;
+  color: #B0303D;
+}
+
+.pagination-controls .btn-outline-secondary:hover:not(:disabled) {
+  background-color: #F5D0D4;
+  border-color: #8C2631;
+  color: #8C2631;
+}
+
+.pagination-controls .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers .btn {
+  font-weight: 500;
+}
+
+.custom-page-input input {
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  text-align: center;
+  transition: border-color 0.2s ease;
+}
+
+.custom-page-input input:focus {
+  border-color: #B0303D;
+  box-shadow: 0 0 0 0.1rem rgba(176, 48, 61, 0.1);
+}
+
+.page-info small {
+  font-weight: 500;
+}
+
+/* Filter button styles */
+.filters-section .btn {
+  height: 38px; /* Match form control height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+}
+
+.btn-outline-secondary {
+  border-color: #B0303D;
+  color: #B0303D;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #F5D0D4;
+  border-color: #8C2631;
+  color: #8C2631;
+}
+
+/* Extra bottom spacing element */
+.bottom-spacing {
+  height: 5rem; /* Significant space at the bottom */
+  width: 100%;
+  margin-bottom: 2rem; /* Additional margin */
+}
+
+/* Styles for pagination buttons previously handled by inline styles */
+.page-numbers .btn-primary.active-page {
+  background-color: #B0303D !important; /* Ensure primary theme color */
+  border-color: #B0303D !important;
+  color: white !important;
+}
+
+.page-numbers .btn-outline-secondary { /* Ensure this style is for non-active pages */
+  color: #B0303D;
+  border-color: #B0303D;
+}
+
+.btn-print-all { /* Style for the print all button */
+  background-color: #B0303D !important;
+  border-color: #B0303D !important;
+  color: white !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  /* .content adjustments are now in admin-layout.component.css */
+  .visitor-logbook {
+    /* padding adjustments if needed, on top of layout padding */
+  }
+  
+  .visitor-header.card-header {
+    padding: 1rem 1.25rem;
+  }
+  
+  .visitor-details.card-body {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .filters-section {
+    padding: 1rem;
+  }
+
+  .filters-section .col-md-4,
+  .filters-section .col-md-3,
+  .filters-section .col-md-2 {
+    margin-bottom: 0.75rem;
+  }
+}
+

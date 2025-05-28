@@ -1,0 +1,23 @@
+<div class="notification-modal-backdrop">
+  <div class="notification-modal">
+    <div class="modal-header">
+      <h3>Notifications</h3>
+      <button class="close-button" (click)="closeNotifications()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <ul class="notifications-list">
+        <li *ngFor="let notification of notifications" 
+            [ngClass]="{'notification-item': true, 'unread': !notification.read, 'read': notification.read}">
+          <p>{{ notification.message }}</p>
+          <small>{{ notification.time }}</small>
+        </li>
+      </ul>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline-secondary" (click)="markAllRead()">Mark all as read</button>
+      <button class="btn btn-outline-secondary" (click)="clearAll()">Clear all</button>
+    </div>
+  </div>
+</div>

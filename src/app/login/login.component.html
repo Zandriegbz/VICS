@@ -1,0 +1,104 @@
+<div class="login-container">
+  <div class="left-panel">
+    <div class="logo-container">
+      <img src="assets/VICS LOGO.png" alt="VICS Logo" class="logo" />
+    </div>
+    <div class="illustration-container">
+      <img
+        src="assets/LOGIN ICON.png"
+        alt="Login Illustration"
+        class="illustration"
+      />
+      <div class="welcome-text">
+        <h1>Welcome to VICS</h1>
+        <p>Visitor Information and Certification Appearance System</p>
+      </div>
+    </div>
+    <div class="background-decoration"></div>
+  </div>
+
+  <div class="right-panel">
+    <div class="login-card">
+      <div class="card-header">
+        <h2>Admin Login</h2>
+        <p>Enter your credentials to access the dashboard</p>
+      </div>
+
+      <form class="login-form" (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <div class="form-group">
+          <label for="username" class="form-label">
+            <i class="fas fa-user"></i>
+            Username
+          </label>
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="username"
+              name="username"
+              class="form-input"
+              [(ngModel)]="username"
+              required
+              placeholder="Enter your username"
+              [class.error]="showError && !username"
+              autocomplete="username"
+            />
+            <div class="input-focus-border"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">
+            <i class="fas fa-lock"></i>
+            Password
+          </label>
+          <div class="input-wrapper">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-input"
+              [(ngModel)]="password"
+              required
+              placeholder="Enter your password"
+              [class.error]="showError && !password"
+              autocomplete="current-password"
+            />
+            <div class="input-focus-border"></div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a routerLink="/forgot-password" class="forgot-password">
+            <i class="fas fa-question-circle"></i>
+            Forgot Password?
+          </a>
+        </div>
+
+        <button 
+          type="submit" 
+          class="login-btn"
+          [class.loading]="isLoading"
+          [disabled]="isLoading"
+        >
+          <span class="btn-text" *ngIf="!isLoading">
+            <i class="fas fa-sign-in-alt"></i>
+            Login
+          </span>
+          <span class="btn-loading" *ngIf="isLoading">
+            <i class="fas fa-spinner fa-spin"></i>
+            Signing in...
+          </span>
+        </button>
+
+        <div class="error-message" *ngIf="errorMessage" [@fadeIn]>
+          <i class="fas fa-exclamation-triangle"></i>
+          {{ errorMessage }}
+        </div>
+      </form>
+    </div>
+
+    <div class="footer-text">
+      <p>&copy; 2025 VICS. All rights reserved.</p>
+    </div>
+  </div>
+</div>

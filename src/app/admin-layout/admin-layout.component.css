@@ -1,0 +1,31 @@
+/* src/app/admin-layout/admin-layout.component.css */
+.admin-layout-container {
+  display: flex;
+  height: 100vh;
+  background-color: var(--bs-body-bg, #ffeff1); /* Ensure consistent background */
+}
+
+.main-content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Allow content to scroll if it overflows */
+  margin-left: 240px; /* Space for the fixed sidebar */
+}
+
+.page-content {
+  flex: 1;
+  padding: 2rem; /* Default padding, can be overridden by page-specific styles if needed */
+  margin-top: 64px;   /* Space for the fixed navbar */
+  background-color: var(--bs-content-bg, #ffeff1);
+}
+
+/* Responsive adjustments for when sidebar might be hidden or collapsed */
+@media (max-width: 768px) { /* Example breakpoint, adjust as per your design for mobile */
+  .main-content-area {
+    margin-left: 0;
+  }
+  .page-content {
+    padding: 1.5rem;
+  }
+} 

@@ -1,0 +1,197 @@
+<!-- Inserted here -->
+<div class="visitor-logbook">
+  <h2 class="mb-3">Visitors Logbook</h2>
+
+  <!-- Search and Filter Section -->
+  <div class="filters-section mb-4">
+    <div class="row g-3">
+      <!-- Search Bar -->
+      <div class="col-md-4">
+        <div class="search-container" [class.active]="searchTerm">
+          <i class="fas fa-search search-icon"></i>
+          <input 
+            type="text" 
+            class="form-control search-input" 
+            [class.active-filter]="searchTerm"
+            placeholder="Search by name, ID, or agency..."
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()"
+          >
+        </div>
+      </div>
+      
+      <!-- Date Filter -->
+      <div class="col-md-3">
+        <input 
+          type="date" 
+          class="form-control"
+          [class.active-filter]="selectedDate"
+          [(ngModel)]="selectedDate"
+          (change)="onDateChange()"
+        >
+      </div>
+      
+      <!-- Certificate Filter -->
+      <div class="col-md-3">
+        <select 
+          class="form-select"
+          [class.active-filter]="selectedCertificateFilter !== 'all'"
+          [(ngModel)]="selectedCertificateFilter"
+          (change)="onCertificateFilterChange()"
+        >
+          <option value="all">All Visitors</option>
+          <option value="certificate">With Certificate</option>
+          <option value="no-certificate">No Certificate</option>
+        </select>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="col-md-2">
+        <div class="d-flex gap-2">
+          <button 
+            class="btn btn-outline-secondary btn-sm"
+            (click)="clearFilters()"
+            title="Clear Filters"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+          <button 
+            class="btn btn-primary btn-sm"
+            (click)="printAll()"
+            title="Print All"
+            class="btn-print-all"
+          >
+            <i class="fas fa-print"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Summary -->
+  <div class="results-summary mb-3">
+    <small class="text-muted">
+      Showing {{ (currentPage - 1) * itemsPerPage + 1 }} - {{ Math.min(currentPage * itemsPerPage, filteredVisitors.length) }} of {{ filteredVisitors.length }} visitors
+      <span *ngIf="filteredVisitors.length !== allVisitors.length">({{ allVisitors.length }} total)</span>
+    </small>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-section mb-4" *ngIf="totalPages > 1">
+    <div class="d-flex justify-content-between align-items-center">
+      <!-- Page Info -->
+      <div class="page-info">
+        <small class="text-muted">
+          Page {{ currentPage }} of {{ totalPages }}
+        </small>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="pagination-controls d-flex align-items-center gap-2">
+        <!-- Previous Button -->
+        <button 
+          class="btn btn-outline-secondary btn-sm"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1"
+        >
+          <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <!-- Page Numbers -->
+        <div class="page-numbers d-flex gap-1">
+          <button 
+            *ngFor="let page of getPageNumbers()"
+            class="btn btn-sm"
+            [ngClass]="{'btn-primary active-page': page === currentPage, 'btn-outline-secondary': page !== currentPage}"
+            (click)="goToPage(page)"
+          >
+            {{ page }}
+          </button>
+        </div>
+
+        <!-- Next Button -->
+        <button 
+          class="btn btn-outline-secondary btn-sm"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages"
+        >
+          <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <!-- Custom Page Input -->
+        <div class="custom-page-input d-flex align-items-center gap-2 ms-3">
+          <small class="text-muted">Go to:</small>
+          <input 
+            type="number" 
+            class="form-control form-control-sm"
+            style="width: 60px;"
+            placeholder="#"
+            [(ngModel)]="customPageInput"
+            (keyup.enter)="onCustomPageInput()"
+            [min]="1"
+            [max]="totalPages"
+          >
+          <button 
+            class="btn btn-outline-secondary btn-sm"
+            (click)="onCustomPageInput()"
+            [disabled]="!customPageInput"
+          >
+            Go
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngFor="let visitor of paginatedVisitors; let i = index" class="visitor-card card mb-3">
+    <div class="visitor-header card-header" (click)="toggleVisitor(i)">
+      <div class="visitor-info">
+        <strong>{{ visitor.lastname }}, {{ visitor.firstname }}</strong>
+        <i
+          class="fas"
+          [ngClass]="{
+            'fa-chevron-down': !visitor.open,
+            'fa-chevron-up': visitor.open
+          }"
+        ></i>
+      </div>
+
+      <div
+        class="visitor-status badge"
+        [ngClass]="{
+          'badge-success': visitor.status === 'Printed',
+          'badge-warning': visitor.status === 'Not Printed'
+        }"
+      >
+        {{ visitor.status }}
+      </div>
+    </div>
+
+    <div class="visitor-details card-body" *ngIf="visitor.open">
+      <div class="visitor-details-content">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Client ID:</strong> {{ visitor.clientId }}</p>
+            <p>
+              <strong>Name:</strong> {{ visitor.firstname }}
+              {{ visitor.middleInitial }} {{ visitor.lastname }}
+            </p>
+            <p><strong>Position:</strong> {{ visitor.position }}</p>
+            <p><strong>Agency:</strong> {{ visitor.agency }}</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Purpose:</strong> {{ visitor.purpose }}</p>
+            <p><strong>Date:</strong> {{ visitor.date }}</p>
+            <p><strong>Time:</strong> {{ visitor.time }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="visitor-actions mt-3 text-end">
+        <button class="btn btn-primary">Print</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Extra bottom spacing -->
+  <div class="bottom-spacing"></div>
+</div>

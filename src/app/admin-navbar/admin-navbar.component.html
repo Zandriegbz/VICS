@@ -1,0 +1,40 @@
+<div class="admin-navbar">
+  <div class="navbar-content">
+    <!-- Left side - can be used for breadcrumbs or other content -->
+    <div class="navbar-left"></div>
+
+    <!-- Right side - notifications and account -->
+    <div class="navbar-right">
+      <!-- Notification Icon with its own container -->
+      <div class="notification-container">
+        <div class="notification" (click)="toggleNotification()">
+          <i class="fas fa-bell"></i>
+          <span class="dot"></span>
+        </div>
+        
+        <!-- Notification modal inside its container -->
+        <app-notification-modal 
+          *ngIf="showNotification"
+          (closeModal)="showNotification = false"
+        ></app-notification-modal>
+      </div>
+
+      <!-- Account section with relative positioning for dropdown -->
+      <div class="admin-account-container">
+        <div class="admin-account" (click)="toggleAccount()">
+          <i class="fas fa-user-circle avatar-icon"></i>
+          <div class="admin-info">
+            <div class="admin-name">Andrew</div>
+            <div class="admin-role">admin account</div>
+          </div>
+        </div>
+        
+        <!-- Account settings positioned relative to this container -->
+        <app-account-settings
+          *ngIf="showAccount"
+          (closeModal)="showAccount = false"
+        ></app-account-settings>
+      </div>
+    </div>
+  </div>
+</div>
