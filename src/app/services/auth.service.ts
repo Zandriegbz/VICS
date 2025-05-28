@@ -13,6 +13,10 @@ import { VicsApiEndpointsService } from './vics-api-endpoints.service';
   providedIn: 'root'
 })
 export class AuthService {
+  // Storage keys
+  private readonly TOKEN_KEY = 'vics_auth_token';
+  private readonly USER_DATA_KEY = 'vics_user_data';
+  
   private isAuthenticated: boolean = false;
   private currentUser: User | null = null;
   
@@ -33,20 +37,47 @@ export class AuthService {
     private http: HttpClient,
     private apiEndpoints: VicsApiEndpointsService
   ) {
-    // Check if user is already logged in from localStorage
+    this.initializeAuthState();
+  }
+  
+  /**
+   * Initialize authentication state from localStorage
+   */
+  private initializeAuthState(): void {
     try {
-      const storedToken = localStorage.getItem('vics_auth_token');
-      const storedUser = localStorage.getItem('vics_user_data');
-      if (storedToken && storedUser) {
+      const storedToken = localStorage.getItem(this.TOKEN_KEY);
+      const storedUser = localStorage.getItem(this.USER_DATA_KEY);
+      
+      if (storedToken && storedUser && this.validateToken(storedToken)) {
         this.currentUser = JSON.parse(storedUser);
         this.isAuthenticated = true;
+      } else if (storedToken || storedUser) {
+        // If we have inconsistent state (token but no user data or invalid token)
+        this.clearAuthData();
       }
     } catch (error) {
-      this.errorService.showError('Failed to load user session', error instanceof Error ? error.message : String(error));
+      console.error('Failed to load user session:', error);
       this.clearAuthData();
     }
   }
 
+  /**
+   * Validate token format
+   */
+  private validateToken(token: string): boolean {
+    // For mock token
+    if (token.startsWith('mock-jwt-token-')) {
+      return true;
+    }
+    
+    // For real JWT
+    const parts = token.split('.');
+    return parts.length === 3;
+  }
+
+  /**
+   * Login user
+   */
   login(username: string, password: string): Observable<LoginResponse> {
     // Use mock authentication in development mode
     try {
@@ -61,15 +92,11 @@ export class AuthService {
           role: user.role
         };
         
-        // Store user in local storage
-        this.currentUser = authUser;
-        this.isAuthenticated = true;
-        
         // Create a mock token
         const mockToken = `mock-jwt-token-${Date.now()}`;
         
-        localStorage.setItem('vics_auth_token', mockToken);
-        localStorage.setItem('vics_user_data', JSON.stringify(authUser));
+        // Save authentication data
+        this.saveAuthData(authUser, mockToken);
         
         return of({
           success: true,
@@ -81,9 +108,10 @@ export class AuthService {
         return of({
           success: false,
           message: 'Invalid username or password'
-        }).pipe(delay(1000)); // Add a small delay to simulate network request
+        }).pipe(delay(1000));
       }
     } catch (error) {
+      console.error('Login error:', error);
       return of({
         success: false,
         message: 'An unexpected error occurred during login'
@@ -96,21 +124,7 @@ export class AuthService {
       .pipe(
         tap(response => {
           if (response.success && response.user && response.token) {
-            // Store token and user data
-            localStorage.setItem('vics_auth_token', response.token);
-            localStorage.setItem('vics_user_data', JSON.stringify(response.user));
-            
-            // Update service state
-            this.currentUser = response.user;
-            this.isAuthenticated = true;
-          } else {
-            // Show error message for unsuccessful login
-            Swal.fire({
-              icon: 'error',
-              title: 'Login Failed',
-              text: response.message || 'Invalid credentials',
-              confirmButtonText: 'Try Again'
-            });
+            this.saveAuthData(response.user, response.token);
           }
         }),
         catchError(this.handleError('Login error'))
@@ -118,15 +132,27 @@ export class AuthService {
     */
   }
 
-  logout(): void {
-    try {
-      this.clearAuthData();
-      this.router.navigate(['/login']);
-    } catch (error) {
-      this.errorService.showError('Logout error', error instanceof Error ? error.message : String(error));
-    }
+  /**
+   * Save authentication data
+   */
+  private saveAuthData(user: User, token: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
+    localStorage.setItem(this.USER_DATA_KEY, JSON.stringify(user));
+    this.currentUser = user;
+    this.isAuthenticated = true;
   }
 
+  /**
+   * Logout user
+   */
+  logout(): void {
+    this.clearAuthData();
+    this.router.navigate(['/login']);
+  }
+
+  /**
+   * Reset password
+   */
   resetPassword(email: string): Observable<PasswordResetResponse> {
     // Use mock implementation for development
     try {
@@ -144,6 +170,7 @@ export class AuthService {
         }).pipe(delay(1000));
       }
     } catch (error) {
+      console.error('Reset password error:', error);
       return of({
         success: false,
         message: 'An unexpected error occurred'
@@ -154,56 +181,69 @@ export class AuthService {
     /*
     return this.http.post<PasswordResetResponse>(`${api}${this.apiEndpoints.resetPassword()}`, { email })
       .pipe(
-        tap(response => {
-          if (response.success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Password Reset Initiated',
-              text: response.message || 'Reset instructions sent to your email',
-              confirmButtonText: 'Ok'
-            });
-          } else {
-            Swal.fire({
-              icon: 'warning',
-              title: 'Password Reset Failed',
-              text: response.message || 'Email not found',
-              confirmButtonText: 'Try Again'
-            });
-          }
-        }),
         catchError(this.handleError('Password reset error'))
       );
     */
   }
 
+  /**
+   * Get authentication token
+   */
   getToken(): string | null {
-    return localStorage.getItem('vics_auth_token');
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
+  /**
+   * Check if user is logged in
+   */
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    
+    if (!token) {
+      return false;
+    }
+    
+    return this.validateToken(token);
   }
 
+  /**
+   * Get current user data
+   */
   getCurrentUser(): User | null {
+    if (!this.isLoggedIn()) {
+      return null;
+    }
+    
     try {
-      const userData = localStorage.getItem('vics_user_data');
+      if (this.currentUser) {
+        return this.currentUser;
+      }
+      
+      const userData = localStorage.getItem(this.USER_DATA_KEY);
       return userData ? JSON.parse(userData) : null;
     } catch (error) {
-      this.errorService.showError('Error retrieving user data', error instanceof Error ? error.message : String(error));
+      console.error('Error retrieving user data:', error);
+      this.clearAuthData();
       return null;
     }
   }
   
+  /**
+   * Clear authentication data
+   */
   private clearAuthData(): void {
-    localStorage.removeItem('vics_auth_token');
-    localStorage.removeItem('vics_user_data');
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_DATA_KEY);
     this.isAuthenticated = false;
     this.currentUser = null;
   }
   
+  /**
+   * Handle HTTP errors
+   */
   private handleError(operation: string) {
     return (error: HttpErrorResponse): Observable<never> => {
-      console.error(error);
+      console.error(`${operation}:`, error);
       
       Swal.fire({
         icon: 'error',

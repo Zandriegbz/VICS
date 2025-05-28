@@ -9,12 +9,21 @@ import { filter } from 'rxjs/operators';
 export class SpinnerService {
   private requestCount = 0;
   private isNavigating = false;
+  
+  // Spinner configuration
+  private readonly SPINNER_TYPE = 'ball-scale-multiple';
 
   constructor(
     private spinnerService: NgxSpinnerService,
     private router: Router
   ) {
-    // Handle router events to automatically show/hide spinner
+    this.setupNavigationEvents();
+  }
+  
+  /**
+   * Setup router event listeners for spinner management
+   */
+  private setupNavigationEvents(): void {
     this.router.events
       .pipe(
         filter(event => 
@@ -25,32 +34,50 @@ export class SpinnerService {
         )
       )
       .subscribe(event => {
-        // Show spinner on navigation start
         if (event instanceof NavigationStart) {
-          this.isNavigating = true;
-          this.spinnerService.show();
-        }
-        
-        // Hide spinner when navigation ends
-        if (
+          this.handleNavigationStart();
+        } else if (
           event instanceof NavigationEnd ||
           event instanceof NavigationCancel ||
           event instanceof NavigationError
         ) {
-          this.isNavigating = false;
-          this.requestCount = 0;
-          this.spinnerService.hide();
+          this.handleNavigationEnd();
         }
       });
   }
-
-  // Show spinner
-  show(): void {
-    this.requestCount++;
-    this.spinnerService.show();
+  
+  /**
+   * Handle navigation start event
+   */
+  private handleNavigationStart(): void {
+    this.isNavigating = true;
+    this.show();
+  }
+  
+  /**
+   * Handle navigation end event
+   */
+  private handleNavigationEnd(): void {
+    this.isNavigating = false;
+    this.requestCount = 0;
+    this.spinnerService.hide();
   }
 
-  // Hide spinner
+  /**
+   * Show spinner
+   */
+  show(): void {
+    this.requestCount++;
+    this.spinnerService.show(undefined, {
+      type: this.SPINNER_TYPE,
+      bdColor: 'rgba(255, 255, 255, 0.8)',
+      color: '#dc3545'
+    });
+  }
+
+  /**
+   * Hide spinner (decrements request count)
+   */
   hide(): void {
     this.requestCount--;
     if (this.requestCount <= 0) {
@@ -59,13 +86,17 @@ export class SpinnerService {
     }
   }
   
-  // Force hide spinner regardless of count
+  /**
+   * Force hide spinner regardless of count
+   */
   forceHide(): void {
     this.requestCount = 0;
     this.spinnerService.hide();
   }
   
-  // Helper method to check if we're currently navigating
+  /**
+   * Check if currently navigating
+   */
   isCurrentlyNavigating(): boolean {
     return this.isNavigating;
   }

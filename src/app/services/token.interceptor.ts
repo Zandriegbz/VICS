@@ -29,21 +29,33 @@ export class TokenInterceptor implements HttpInterceptor {
 
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          // Session expired or unauthorized
-          this.authService.logout();
-          this.router.navigate(['/login']);
-          
-          Swal.fire({
-            icon: 'error',
-            title: 'Session Expired',
-            text: 'Your session has expired. Please log in again.',
-            confirmButtonText: 'Ok'
-          });
+        // Handle 401 Unauthorized errors (expired token, invalid token)
+        if (error.status === 401 && token) {
+          // Only handle as session expired if we sent a token
+          this.handleSessionExpired();
         }
         
         return throwError(() => error);
       })
     );
+  }
+  
+  /**
+   * Handle session expired scenario
+   */
+  private handleSessionExpired(): void {
+    // Clear authentication data
+    this.authService.logout();
+    
+    // Show session expired notification
+    Swal.fire({
+      icon: 'error',
+      title: 'Session Expired',
+      text: 'Your session has expired. Please log in again.',
+      confirmButtonText: 'Ok'
+    });
+    
+    // Redirect to login page
+    this.router.navigate(['/login']);
   }
 } 

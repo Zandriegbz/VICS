@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../services/auth.service';
@@ -18,7 +18,7 @@ import { SpinnerService } from '../services/spinner.service';
     ])
   ]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   username = '';
   password = '';
   isLoading = false;
@@ -31,30 +31,38 @@ export class LoginComponent {
     private route: ActivatedRoute,
     private authService: AuthService,
     private spinnerService: SpinnerService
-  ) {
+  ) {}
+  
+  ngOnInit(): void {
     // Get return URL from route parameters or default to '/admin/dashboard'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin/dashboard';
     
-    // If already logged in, redirect to the admin dashboard
+    // If already logged in, redirect to the return URL
     if (this.authService.isLoggedIn()) {
       this.router.navigate([this.returnUrl]);
     }
   }
 
-  onSubmit() {
+  onSubmit(): void {
+    // Reset error state
     this.showError = false;
     this.errorMessage = '';
-    this.isLoading = true;
     
-    // Show spinner for login
+    // Validate form
+    if (!this.username || !this.password) {
+      this.showError = true;
+      this.errorMessage = 'Please enter both username and password';
+      return;
+    }
+    
+    // Set loading state
+    this.isLoading = true;
     this.spinnerService.show();
 
     this.authService.login(this.username, this.password)
       .pipe(
-        // Make sure to finalize to reset loading state even if there's an error
         finalize(() => {
           this.isLoading = false;
-          // Always force hide the spinner
           this.spinnerService.forceHide();
         })
       )

@@ -9,9 +9,19 @@ import { AuthGuard } from './services/auth.guard';
 import { RoleGuard } from './services/role.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  // Public routes
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
+  
+  // Redirect dashboard to admin dashboard with auth guard
+  { 
+    path: 'dashboard', 
+    redirectTo: '/admin/dashboard', 
+    pathMatch: 'full'
+  },
+  
+  // Protected admin routes
   {
     path: 'admin',
     component: AdminLayoutComponent,
@@ -27,7 +37,9 @@ const routes: Routes = [
       },
     ]
   },
-  { path: '**', redirectTo: 'login' }
+  
+  // Fallback route
+  { path: '**', redirectTo: '/login' }
 ];
 
 @NgModule({
