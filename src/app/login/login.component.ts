@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../services/auth.service';
+import { finalize } from 'rxjs/operators';
+import { SpinnerService } from '../services/spinner.service';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +29,8 @@ export class LoginComponent {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private spinnerService: SpinnerService
   ) {
     // Get return URL from route parameters or default to '/admin/dashboard'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin/dashboard';
@@ -38,22 +41,37 @@ export class LoginComponent {
     }
   }
 
-  async onSubmit() {
+  onSubmit() {
     this.showError = false;
     this.errorMessage = '';
     this.isLoading = true;
+    
+    // Show spinner for login
+    this.spinnerService.show();
 
-    // Simulate loading delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    this.authService.login(this.username, this.password).subscribe(result => {
-      if (result.success) {
-        this.router.navigate([this.returnUrl]);
-      } else {
-        this.showError = true;
-        this.errorMessage = result.message || 'Invalid username or password. Please try again.';
-      }
-      this.isLoading = false;
-    });
+    this.authService.login(this.username, this.password)
+      .pipe(
+        // Make sure to finalize to reset loading state even if there's an error
+        finalize(() => {
+          this.isLoading = false;
+          // Always force hide the spinner
+          this.spinnerService.forceHide();
+        })
+      )
+      .subscribe({
+        next: (result) => {
+          if (result.success) {
+            this.router.navigate([this.returnUrl]);
+          } else {
+            this.showError = true;
+            this.errorMessage = result.message || 'Invalid username or password. Please try again.';
+          }
+        },
+        error: (error) => {
+          this.showError = true;
+          this.errorMessage = 'An error occurred during login. Please try again.';
+          console.error('Login error:', error);
+        }
+      });
   }
 }

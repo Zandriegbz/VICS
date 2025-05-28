@@ -1,242 +1,226 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
+import { catchError, tap, delay } from 'rxjs/operators';
 import { Visitor } from '../models/visitor.model';
 import { ErrorService } from './error.service';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { api } from '../connection';
+import Swal from 'sweetalert2';
+import { VicsApiEndpointsService } from './vics-api-endpoints.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VisitorService {
-
+  // Mock data for development purposes
   private mockVisitors: Visitor[] = [
     {
-      clientId: 'CL001',
-      lastname: 'Garcia',
-      firstname: 'Juan',
-      middleInitial: 'D.',
+      clientId: '001',
+      firstname: 'John',
+      lastname: 'Doe',
+      middleInitial: 'A',
       position: 'Manager',
-      agency: 'DPWH',
-      purpose: 'Meeting',
-      date: '2025-05-18',
-      time: '10:30 AM',
+      agency: 'ABC Corporation',
+      purpose: 'Meeting with HR',
+      date: '2023-05-15',
+      time: '09:30',
       status: 'Printed',
       open: false
     },
     {
-      clientId: 'CL002',
-      lastname: 'Santos',
-      firstname: 'Maria',
-      middleInitial: 'L.',
-      position: 'Engineer',
-      agency: 'LGU',
-      purpose: 'Documentation',
-      date: '2025-05-18',
-      time: '11:00 AM',
+      clientId: '002',
+      firstname: 'Alice',
+      lastname: 'Johnson',
+      middleInitial: 'B',
+      position: 'Developer',
+      agency: 'Tech Solutions',
+      purpose: 'Job Interview',
+      date: '2023-05-15',
+      time: '13:15',
       status: 'Not Printed',
+      open: true
+    },
+    {
+      clientId: '003',
+      firstname: 'Michael',
+      lastname: 'Brown',
+      middleInitial: 'C',
+      position: 'Citizen',
+      agency: 'Self',
+      purpose: 'Permit Application',
+      date: '2023-05-15',
+      time: '10:00',
+      status: 'Printed',
       open: false
     },
     {
-      clientId: 'CL002',
-      lastname: 'Penaso',
-      firstname: 'Ethel Dawn',
-      middleInitial: 'T.',
-      position: 'Engineer',
-      agency: 'LGU',
-      purpose: 'Documentation',
-      date: '2025-05-18',
-      time: '11:00 AM',
+      clientId: '004',
+      firstname: 'Sarah',
+      lastname: 'Wilson',
+      middleInitial: 'D',
+      position: 'Consultant',
+      agency: 'Wilson Consulting',
+      purpose: 'Document Submission',
+      date: '2023-05-15',
+      time: '14:45',
       status: 'Not Printed',
-      open: false
+      open: true
     },
     {
-      clientId: 'CL002',
-      lastname: 'Narciso',
-      firstname: 'Joseph Angelo',
-      middleInitial: 'A.',
-      position: 'Engineer',
-      agency: 'LGU',
-      purpose: 'Documentation',
-      date: '2025-05-18',
-      time: '11:00 AM',
-      status: 'Not Printed',
-      open: false
-    },
-    {
-      clientId: 'CL002',
-      lastname: 'Rizal',
-      firstname: 'Jose',
-      middleInitial: 'L.',
-      position: 'Engineer',
-      agency: 'LGU',
-      purpose: 'Documentation',
-      date: '2025-05-18',
-      time: '11:00 AM',
-      status: 'Not Printed',
-      open: false
-    },
-    {
-      clientId: 'CL002',
-      lastname: 'Lutbo',
-      firstname: 'Wael Hee',
-      middleInitial: 'L.',
-      position: 'Engineer',
-      agency: 'LGU',
-      purpose: 'Documentation',
-      date: '2025-05-18',
-      time: '11:00 AM',
-      status: 'Not Printed',
-      open: false
-    },
-    {
-      clientId: 'CL004',
-      lastname: 'Dela Cruz',
-      firstname: 'Anna',
-      middleInitial: 'B.',
-      position: 'Secretary',
-      agency: 'DOH',
-      purpose: 'Health Report',
-      date: '2025-05-18',
-      time: '2:00 PM',
-      status: 'Not Printed',
-      open: false
-    },
-    {
-      clientId: 'CL005',
-      lastname: 'Torres',
-      firstname: 'Marco',
-      middleInitial: 'T.',
+      clientId: '005',
+      firstname: 'Robert',
+      lastname: 'Miller',
+      middleInitial: 'E',
       position: 'Architect',
-      agency: 'LGU',
+      agency: 'Design Firm',
       purpose: 'Consultation',
-      date: '2025-05-18',
-      time: '2:45 PM',
+      date: '2023-05-15',
+      time: '11:30',
       status: 'Printed',
-      open: false
-    },
-    {
-      clientId: 'CL006',
-      lastname: 'Lopez',
-      firstname: 'Bea',
-      middleInitial: 'C.',
-      position: 'Analyst',
-      agency: 'DTI',
-      purpose: 'Market Report',
-      date: '2025-05-18',
-      time: '3:30 PM',
-      status: 'Not Printed',
-      open: false
-    },
-    {
-      clientId: 'CL007',
-      lastname: 'Fernandez',
-      firstname: 'Nico',
-      middleInitial: 'J.',
-      position: 'Intern',
-      agency: 'DOST',
-      purpose: 'Interview',
-      date: '2025-05-18',
-      time: '4:15 PM',
-      status: 'Printed',
-      open: false
-    },
-    {
-      clientId: 'CL008',
-      lastname: 'Ramos',
-      firstname: 'Liza',
-      middleInitial: 'E.',
-      position: 'Supervisor',
-      agency: 'DA',
-      purpose: 'Project Proposal',
-      date: '2025-05-18',
-      time: '5:00 PM',
-      status: 'Not Printed',
-      open: false
-    },
-    {
-      clientId: 'CL009',
-      lastname: 'Gutierrez',
-      firstname: 'Manny',
-      middleInitial: 'G.',
-      position: 'Director',
-      agency: 'CHED',
-      purpose: 'Budget Meeting',
-      date: '2025-05-18',
-      time: '5:45 PM',
-      status: 'Printed',
-      open: false
-    },
-    {
-      clientId: 'CL010',
-      lastname: 'Villanueva',
-      firstname: 'Karla',
-      middleInitial: 'S.',
-      position: 'Assistant',
-      agency: 'NEDA',
-      purpose: 'Follow-up',
-      date: '2025-05-18',
-      time: '6:30 PM',
-      status: 'Not Printed',
       open: false
     }
   ];
 
-  constructor(private errorService: ErrorService) { }
+  constructor(
+    private errorService: ErrorService,
+    private http: HttpClient,
+    private apiEndpoints: VicsApiEndpointsService
+  ) { }
 
   getVisitors(): Observable<Visitor[]> {
-    try {
-      return of(JSON.parse(JSON.stringify(this.mockVisitors)));
-    } catch (error) {
-      this.errorService.showError('Failed to retrieve visitors', error instanceof Error ? error.message : String(error));
-      return of([]);
-    }
+    // Use mock data in development mode
+    return of(this.mockVisitors).pipe(delay(800));
+    
+    // Uncomment when backend is ready
+    /*
+    return this.http.get<Visitor[]>(`${api}${this.apiEndpoints.getVisitors()}`).pipe(
+      catchError(err => this.handleError(err, 'Failed to retrieve visitors'))
+    );
+    */
   }
 
-  addVisitor(visitor: Visitor): Observable<boolean> {
-    try {
-      // In a real app, this would make an API call
-      this.mockVisitors.push(visitor);
-      this.errorService.showInfo('Visitor added successfully', `Added ${visitor.firstname} ${visitor.lastname}`);
-      return of(true);
-    } catch (error) {
-      this.errorService.showError('Failed to add visitor', error instanceof Error ? error.message : String(error));
-      return of(false);
-    }
+  addVisitor(visitor: Visitor): Observable<Visitor> {
+    // Use mock data in development mode
+    const newVisitor: Visitor = {
+      ...visitor,
+      clientId: 'MOCK-' + Math.floor(Math.random() * 10000).toString(),
+      status: 'Not Printed'
+    };
+    
+    this.mockVisitors.push(newVisitor);
+    
+    return of(newVisitor).pipe(
+      delay(800),
+      tap(response => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: `Visitor ${visitor.firstname} ${visitor.lastname} added successfully`,
+          confirmButtonText: 'Ok'
+        });
+      })
+    );
+    
+    // Uncomment when backend is ready
+    /*
+    return this.http.post<Visitor>(`${api}${this.apiEndpoints.addVisitor()}`, visitor).pipe(
+      tap(response => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: `Visitor ${visitor.firstname} ${visitor.lastname} added successfully`,
+          confirmButtonText: 'Ok'
+        });
+      }),
+      catchError(err => this.handleError(err, 'Failed to add visitor'))
+    );
+    */
   }
 
-  updateVisitor(visitor: Visitor): Observable<boolean> {
-    try {
-      // In a real app, this would make an API call
-      const index = this.mockVisitors.findIndex(v => v.clientId === visitor.clientId);
-      if (index !== -1) {
-        this.mockVisitors[index] = visitor;
-        this.errorService.showInfo('Visitor updated successfully', `Updated ${visitor.firstname} ${visitor.lastname}`);
-        return of(true);
-      } else {
-        this.errorService.showWarning('Visitor not found', `Could not find visitor with ID ${visitor.clientId}`);
-        return of(false);
-      }
-    } catch (error) {
-      this.errorService.showError('Failed to update visitor', error instanceof Error ? error.message : String(error));
-      return of(false);
+  updateVisitor(visitor: Visitor): Observable<Visitor> {
+    // Use mock data in development mode
+    const index = this.mockVisitors.findIndex(v => v.clientId === visitor.clientId);
+    if (index !== -1) {
+      this.mockVisitors[index] = visitor;
     }
+    
+    return of(visitor).pipe(
+      delay(800),
+      tap(response => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: `Visitor ${visitor.firstname} ${visitor.lastname} updated successfully`,
+          confirmButtonText: 'Ok'
+        });
+      })
+    );
+    
+    // Uncomment when backend is ready
+    /*
+    return this.http.put<Visitor>(`${api}${this.apiEndpoints.updateVisitor(visitor.clientId)}`, visitor).pipe(
+      tap(response => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: `Visitor ${visitor.firstname} ${visitor.lastname} updated successfully`,
+          confirmButtonText: 'Ok'
+        });
+      }),
+      catchError(err => this.handleError(err, 'Failed to update visitor'))
+    );
+    */
   }
 
-  deleteVisitor(clientId: string): Observable<boolean> {
-    try {
-      // In a real app, this would make an API call
-      const index = this.mockVisitors.findIndex(v => v.clientId === clientId);
-      if (index !== -1) {
-        const deletedVisitor = this.mockVisitors[index];
-        this.mockVisitors.splice(index, 1);
-        this.errorService.showInfo('Visitor deleted successfully', `Deleted ${deletedVisitor.firstname} ${deletedVisitor.lastname}`);
-        return of(true);
-      } else {
-        this.errorService.showWarning('Visitor not found', `Could not find visitor with ID ${clientId}`);
-        return of(false);
-      }
-    } catch (error) {
-      this.errorService.showError('Failed to delete visitor', error instanceof Error ? error.message : String(error));
-      return of(false);
+  deleteVisitor(clientId: string): Observable<void> {
+    // Use mock data in development mode
+    const index = this.mockVisitors.findIndex(v => v.clientId === clientId);
+    if (index !== -1) {
+      this.mockVisitors.splice(index, 1);
     }
+    
+    return of(undefined).pipe(
+      delay(800),
+      tap(response => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Visitor deleted successfully',
+          confirmButtonText: 'Ok'
+        });
+      })
+    );
+    
+    // Uncomment when backend is ready
+    /*
+    return this.http.delete<void>(`${api}${this.apiEndpoints.deleteVisitor(clientId)}`).pipe(
+      tap(response => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Visitor deleted successfully',
+          confirmButtonText: 'Ok'
+        });
+      }),
+      catchError(err => this.handleError(err, 'Failed to delete visitor'))
+    );
+    */
+  }
+
+  private handleError(error: HttpErrorResponse, message: string): Observable<never> {
+    console.error(error);
+    
+    // For backward compatibility, also use the ErrorService
+    this.errorService.handleHttpError(error);
+    
+    // Show SweetAlert2 notification
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: `${message}: ${error.error?.message || error.message || 'Unknown error occurred'}`,
+      confirmButtonText: 'Ok'
+    });
+    
+    return throwError(() => new Error(message));
   }
 } 

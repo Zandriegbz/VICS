@@ -3,6 +3,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router'; // ✅ import this
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
@@ -15,7 +17,8 @@ import { VisitorLogbookComponent } from './visitor-logbook/visitor-logbook.compo
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { AccountSettingsComponent } from './account-settings/account-settings.component'; // ✅ make sure this is here
 import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
-import { ErrorToastComponent } from './components/error-toast/error-toast.component';
+import { TokenInterceptor } from './services/token.interceptor';
+import { LoadingInterceptor } from './services/loading.interceptor';
 
 
 @NgModule({
@@ -29,16 +32,21 @@ import { ErrorToastComponent } from './components/error-toast/error-toast.compon
     VisitorLogbookComponent,
     NotificationModalComponent,
     AccountSettingsComponent, // ✅ Declare it here
-    AdminLayoutComponent, ErrorToastComponent
+    AdminLayoutComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule, // Added for animations support
     FormsModule, // ✅ Required for [(ngModel)]
     RouterModule,       // ✅ this line is important
-    AppRoutingModule    // ✅ routing config
+    AppRoutingModule,   // ✅ routing config
+    HttpClientModule,   // ✅ HTTP client for API calls
+    NgxSpinnerModule.forRoot({ type: 'ball-scale-multiple' })    // ✅ Loading spinner with default type
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

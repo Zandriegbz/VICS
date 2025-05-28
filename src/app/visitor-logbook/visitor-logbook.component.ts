@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { VisitorService } from '../services/visitor.service'; // Import service
+import { VisitorService } from '../services/visitor.service';
 import { Visitor } from '../models/visitor.model';
+import { SpinnerService } from '../services/spinner.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-visitor-logbook',
@@ -8,71 +10,109 @@ import { Visitor } from '../models/visitor.model';
   styleUrls: ['./visitor-logbook.component.css']
 })
 export class VisitorLogbookComponent implements OnInit {
-
   // Filter properties
   searchTerm: string = '';
   selectedDate: string = '';
   selectedCertificateFilter: string = 'all';
   
-  // Filtered visitors array
+  // Data arrays
+  allVisitors: Visitor[] = [];
   filteredVisitors: Visitor[] = [];
+  paginatedVisitors: Visitor[] = [];
   
   // Pagination properties
   currentPage: number = 1;
   itemsPerPage: number = 10;
   totalPages: number = 0;
-  paginatedVisitors: any[] = [];
   customPageInput: string = '';
-  allVisitors: Visitor[] = []; // To store the original list
   
   // Expose Math to template
   Math = Math;
 
-  constructor(private visitorService: VisitorService) {} // Inject service
+  constructor(
+    private visitorService: VisitorService,
+    private spinnerService: SpinnerService
+  ) {}
 
   ngOnInit(): void {
-    this.visitorService.getVisitors().subscribe(data => {
-      this.allVisitors = data;
-      this.applyFilters(); // Apply initial filters (which will also paginate)
-    });
+    this.loadVisitorData();
+  }
+  
+  loadVisitorData(): void {
+    if (!this.spinnerService.isCurrentlyNavigating()) {
+      this.spinnerService.show();
+    }
+    
+    this.visitorService.getVisitors()
+      .pipe(
+        finalize(() => {
+          if (!this.spinnerService.isCurrentlyNavigating()) {
+            this.spinnerService.hide();
+          }
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.allVisitors = data;
+          this.applyFilters();
+        },
+        error: (error) => {
+          console.error('Error loading visitor data:', error);
+        }
+      });
   }
 
   toggleVisitor(index: number): void {
     // Find the original visitor in the main array using the paginated visitor
     const paginatedVisitor = this.paginatedVisitors[index];
-    const originalIndex = this.allVisitors.findIndex(v => v.clientId === paginatedVisitor.clientId && v.date === paginatedVisitor.date && v.time === paginatedVisitor.time); // More robust find
+    const originalIndex = this.allVisitors.findIndex(v => 
+      v.clientId === paginatedVisitor.clientId && 
+      v.date === paginatedVisitor.date && 
+      v.time === paginatedVisitor.time
+    );
+    
     if (originalIndex !== -1) {
       this.allVisitors[originalIndex].open = !this.allVisitors[originalIndex].open;
-      this.updatePagination(); // Refresh paginated list without changing filters
+      this.updatePagination();
     }
   }
 
   applyFilters(): void {
-    this.filteredVisitors = this.allVisitors.filter(visitor => {
-      // Search filter
-      const matchesSearch = this.searchTerm === '' || 
-        `${visitor.firstname} ${visitor.lastname}`.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        visitor.clientId.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        visitor.agency.toLowerCase().includes(this.searchTerm.toLowerCase());
-
-      // Date filter
-      const matchesDate = this.selectedDate === '' || visitor.date === this.selectedDate;
-
-      // Certificate filter
-      let matchesCertificate = true;
-      if (this.selectedCertificateFilter === 'certificate') {
-        matchesCertificate = visitor.status === 'Printed';
-      } else if (this.selectedCertificateFilter === 'no-certificate') {
-        matchesCertificate = visitor.status === 'Not Printed';
-      }
-      // 'all' and 'print-all' show all visitors
-
-      return matchesSearch && matchesDate && matchesCertificate;
-    });
+    if (!this.spinnerService.isCurrentlyNavigating()) {
+      this.spinnerService.show();
+    }
     
-    // Reset to first page when filters change
-    this.currentPage = 1;
-    this.updatePagination();
+    // Use setTimeout for better UX
+    setTimeout(() => {
+      this.filteredVisitors = this.allVisitors.filter(visitor => {
+        // Search filter
+        const matchesSearch = this.searchTerm === '' || 
+          `${visitor.firstname} ${visitor.lastname}`.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          visitor.clientId.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          visitor.agency.toLowerCase().includes(this.searchTerm.toLowerCase());
+
+        // Date filter
+        const matchesDate = this.selectedDate === '' || visitor.date === this.selectedDate;
+
+        // Certificate filter
+        let matchesCertificate = true;
+        if (this.selectedCertificateFilter === 'certificate') {
+          matchesCertificate = visitor.status === 'Printed';
+        } else if (this.selectedCertificateFilter === 'no-certificate') {
+          matchesCertificate = visitor.status === 'Not Printed';
+        }
+
+        return matchesSearch && matchesDate && matchesCertificate;
+      });
+      
+      // Reset to first page when filters change
+      this.currentPage = 1;
+      this.updatePagination();
+      
+      if (!this.spinnerService.isCurrentlyNavigating()) {
+        this.spinnerService.hide();
+      }
+    }, 300);
   }
 
   updatePagination(): void {
@@ -102,29 +142,46 @@ export class VisitorLogbookComponent implements OnInit {
   }
 
   printAll(): void {
-    // Placeholder for print functionality
-    console.log('Printing all filtered visitors:', this.filteredVisitors);
-    // Here you would implement actual printing functionality
+    if (!this.spinnerService.isCurrentlyNavigating()) {
+      this.spinnerService.show();
+    }
+    
+    // Simulate print processing
+    setTimeout(() => {
+      console.log('Printing all filtered visitors:', this.filteredVisitors);
+      
+      if (!this.spinnerService.isCurrentlyNavigating()) {
+        this.spinnerService.hide();
+      }
+    }, 1500);
   }
 
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.updatePagination();
+      if (!this.spinnerService.isCurrentlyNavigating()) {
+        this.spinnerService.show();
+      }
+      
+      setTimeout(() => {
+        this.currentPage = page;
+        this.updatePagination();
+        
+        if (!this.spinnerService.isCurrentlyNavigating()) {
+          this.spinnerService.hide();
+        }
+      }, 300);
     }
   }
 
   previousPage(): void {
     if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updatePagination();
+      this.goToPage(this.currentPage - 1);
     }
   }
 
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.updatePagination();
+      this.goToPage(this.currentPage + 1);
     }
   }
 

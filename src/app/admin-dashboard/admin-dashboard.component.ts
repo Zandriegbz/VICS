@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { DashboardService } from '../services/dashboard.service'; // Import service
+import { DashboardService } from '../services/dashboard.service';
 import { ChartDataPoint, WeeklyStats, DepartmentVisitor, ChartLegendItem, TimePeriod } from '../models/dashboard.model';
+import { SpinnerService } from '../services/spinner.service';
+import { forkJoin } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -46,59 +49,105 @@ export class AdminDashboardComponent implements OnInit {
 
   // Time period selection
   selectedPeriod = '7days';
+  
+  // Data objects
+  visitorBreakdown: any = null;
+  completedMeetings: any = null;
+  defaultedVisitors: any = null;
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private spinnerService: SpinnerService
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboardData();
   }
 
   loadDashboardData(): void {
-    // Fetch all data from the service
-    this.dashboardService.getTotalVisitorsTrend().subscribe(data => {
-      this.totalVisitorsTrendData = data;
-    });
-
-    this.dashboardService.getWeeklyStats().subscribe(data => {
-      this.weeklyStats = data;
-    });
-
-    this.dashboardService.getDepartmentVisitors().subscribe(data => {
-      this.departmentVisitorsData = data;
-    });
-
-    this.dashboardService.getChartLegend().subscribe(data => {
-      this.chartLegend = data;
-    });
-
-    this.dashboardService.getTimePeriods().subscribe(data => {
-      this.timePeriods = data;
-    });
-
-    this.dashboardService.getPreviousWeekTotal().subscribe(total => {
-      this.previousWeekTotal = total;
-      // Calculate weekly growth percentage after getting both current and previous week totals
-      this.dashboardService.getWeeklyStats().subscribe(stats => {
-        this.weeklyGrowth = ((stats.total - this.previousWeekTotal) / this.previousWeekTotal * 100);
+    // Show spinner for data loading
+    if (!this.spinnerService.isCurrentlyNavigating()) {
+      this.spinnerService.show();
+    }
+    
+    // Create an array of all the observables we need to fetch
+    const requests = [
+      this.dashboardService.getTotalVisitorsTrend(),
+      this.dashboardService.getWeeklyStats(),
+      this.dashboardService.getDepartmentVisitors(),
+      this.dashboardService.getChartLegend(),
+      this.dashboardService.getTimePeriods(),
+      this.dashboardService.getPreviousWeekTotal(),
+      this.dashboardService.getVisitorBreakdown(),
+      this.dashboardService.getCompletedMeetings(),
+      this.dashboardService.getDefaultedVisitors()
+    ];
+    
+    // Use forkJoin to execute all requests in parallel
+    forkJoin(requests)
+      .pipe(
+        finalize(() => {
+          if (!this.spinnerService.isCurrentlyNavigating()) {
+            this.spinnerService.hide();
+          }
+        })
+      )
+      .subscribe({
+        next: ([
+          trendData,
+          weeklyStats,
+          departmentVisitors,
+          chartLegend,
+          timePeriods,
+          previousWeekTotal,
+          visitorBreakdown,
+          completedMeetings,
+          defaultedVisitors
+        ]) => {
+          // Assign the data to component properties
+          this.totalVisitorsTrendData = trendData;
+          this.weeklyStats = weeklyStats;
+          this.departmentVisitorsData = departmentVisitors;
+          this.chartLegend = chartLegend;
+          this.timePeriods = timePeriods;
+          this.previousWeekTotal = previousWeekTotal;
+          this.visitorBreakdown = visitorBreakdown;
+          this.completedMeetings = completedMeetings;
+          this.defaultedVisitors = defaultedVisitors;
+          
+          // Calculate weekly growth percentage
+          this.weeklyGrowth = ((this.weeklyStats.total - this.previousWeekTotal) / this.previousWeekTotal * 100);
+        },
+        error: (error) => {
+          console.error('Error loading dashboard data:', error);
+        }
       });
-    });
   }
 
-  // Methods for interactivity
-  onPeriodChange(period: string) {
+  // Update time period selection and reload data
+  onPeriodChange(period: string): void {
     this.selectedPeriod = period;
     this.timePeriods.forEach(p => p.active = p.value === period);
-    // Here you would typically fetch new data based on the selected period
-    console.log('Period changed to:', period);
+    
+    if (!this.spinnerService.isCurrentlyNavigating()) {
+      this.spinnerService.show();
+    }
+    
+    // Simulate data refresh (would be replaced with actual API call)
+    setTimeout(() => {
+      if (!this.spinnerService.isCurrentlyNavigating()) {
+        this.spinnerService.hide();
+      }
+    }, 1000);
   }
 
-  onBarClick(day: ChartDataPoint) {
+  onBarClick(day: ChartDataPoint): void {
     console.log('Clicked on day:', day);
-    // Here you would navigate to detailed view for that day
+    // Navigation for detailed view would be implemented here
   }
 
-  exportChart() {
+  exportChart(): void {
     console.log('Exporting chart...');
-    // Here you would implement chart export functionality
+    // Export functionality would be implemented here
   }
 }

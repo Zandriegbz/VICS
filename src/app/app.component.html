@@ -1,2 +1,11 @@
-<app-error-toast></app-error-toast>
 <router-outlet></router-outlet>
+
+<!-- Simple unified spinner -->
+<ngx-spinner 
+  type="ball-scale-multiple"
+  bdColor="rgba(255, 255, 255, 0.8)" 
+  size="medium" 
+  color="#dc3545" 
+  [fullScreen]="true">
+  <p class="loading-text">Loading...</p>
+</ngx-spinner>

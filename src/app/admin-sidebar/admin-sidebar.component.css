@@ -11,7 +11,7 @@
   /* box-shadow: 0 0 15px rgba(0,0,0,0.1); */ /* Optional: if HRIS sidebar has a subtle shadow */
   border-right: 1px solid #e9ecef;
   position: fixed;
-  z-index: 1000; /* Ensure sidebar is above content */
+  z-index: 1000; /* Ensure sidebar is above content and spinner */
 }
 
 .logo-container {

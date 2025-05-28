@@ -142,28 +142,20 @@
       <div class="card-body">
         <h3 class="chart-title">Visitor Breakdown</h3>
         <!-- Custom Donut Chart Placeholder -->
-        <div class="custom-donut-chart">
+        <div class="custom-donut-chart" *ngIf="visitorBreakdown">
           <div class="donut-chart">
-            <div class="donut-segment segment-1" style="--percentage: 27;"></div>
-            <div class="donut-segment segment-2" style="--percentage: 17;"></div>
-            <div class="donut-segment segment-3" style="--percentage: 56;"></div>
+            <div class="donut-segment segment-1" style="--percentage: 28;"></div>
+            <div class="donut-segment segment-2" style="--percentage: 18;"></div>
+            <div class="donut-segment segment-3" style="--percentage: 54;"></div>
             <div class="donut-center">
-              <span class="total-count">{{ currentVisitors }}</span>
+              <span class="total-count">{{ visitorBreakdown.total }}</span>
               <span class="total-label">Total</span>
             </div>
           </div>
           <div class="donut-legend">
-            <div class="legend-item">
-              <span class="legend-color bg-primary"></span>
-              <span class="legend-text">HR Visitors (34)</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-color bg-info"></span>
-              <span class="legend-text">Mayor's Office (22)</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-color bg-success"></span>
-              <span class="legend-text">Others (72)</span>
+            <div class="legend-item" *ngFor="let category of visitorBreakdown.categories">
+              <span class="legend-color" [style.background-color]="category.color"></span>
+              <span class="legend-text">{{ category.name }} ({{ category.value }})</span>
             </div>
           </div>
         </div>
@@ -176,11 +168,19 @@
         <div class="card-icon-container bg-warning">
           <i class="fas fa-check-circle icon text-white"></i>
         </div>
-        <div class="card-content">
+        <div class="card-content" *ngIf="completedMeetings">
           <h3 class="card-title">Completed Meetings</h3>
-          <p class="card-value">18</p>
+          <p class="card-value">{{ completedMeetings.count }}</p>
           <div class="card-stats">
-            <span class="trend-stable"><i class="fas fa-equals"></i> Same as yesterday</span>
+            <span class="trend-stable" *ngIf="completedMeetings.change === 'same'">
+              <i class="fas fa-equals"></i> {{ completedMeetings.changeText }}
+            </span>
+            <span class="trend-up" *ngIf="completedMeetings.change === 'up'">
+              <i class="fas fa-arrow-up"></i> {{ completedMeetings.changeText }}
+            </span>
+            <span class="trend-down" *ngIf="completedMeetings.change === 'down'">
+              <i class="fas fa-arrow-down"></i> {{ completedMeetings.changeText }}
+            </span>
           </div>
         </div>
         <a href="#" class="btn btn-primary mt-auto">View Details <i class="fas fa-arrow-right"></i></a>
@@ -193,11 +193,19 @@
         <div class="card-icon-container bg-danger">
           <i class="fas fa-times-circle icon text-white"></i>
         </div>
-        <div class="card-content">
+        <div class="card-content" *ngIf="defaultedVisitors">
           <h3 class="card-title">Defaulted Visitors</h3>
-          <p class="card-value">5</p>
+          <p class="card-value">{{ defaultedVisitors.count }}</p>
           <div class="card-stats">
-            <span class="trend-down"><i class="fas fa-arrow-down"></i> 2% from yesterday</span>
+            <span class="trend-down" *ngIf="defaultedVisitors.change === 'down'">
+              <i class="fas fa-arrow-down"></i> {{ defaultedVisitors.changeText }}
+            </span>
+            <span class="trend-up" *ngIf="defaultedVisitors.change === 'up'">
+              <i class="fas fa-arrow-up"></i> {{ defaultedVisitors.changeText }}
+            </span>
+            <span class="trend-stable" *ngIf="defaultedVisitors.change === 'same'">
+              <i class="fas fa-equals"></i> {{ defaultedVisitors.changeText }}
+            </span>
           </div>
         </div>
         <a href="#" class="btn btn-primary mt-auto">View Details <i class="fas fa-arrow-right"></i></a>

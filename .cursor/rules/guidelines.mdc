@@ -1,0 +1,241 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# VICS Project Guidelines & Standards
+
+**Purpose:** This document outlines the core architectural patterns, coding standards, and important configurations for the VICS Angular project. Please refer to this document *always* to ensure consistency and adherence to the established project structure.
+
+---
+
+## 1. Project Overview
+
+*   **Project Name:** VICS (Visitor Information and Certification System)
+*   **Angular Version:** ~16.2.x (as per `package.json`)
+*   **Primary Goal:** To build a robust and maintainable frontend application. Consistency with the patterns outlined below is crucial.
+
+---
+
+## 2. Core API Interaction & Backend Connection
+
+### 2.1. API URL Configuration
+*   **Environment Files:** API base URLs are managed in environment files.
+    *   `src/environments/environment.ts` (for development):
+        ```typescript
+        // src/environments/environment.ts (VICS)
+        export const environment = {
+          production: false,
+          apiUrl: 'http://localhost:7000/api' // Actual VICS Development API URL
+        };
+        ```
+    *   `src/environments/environment.prod.ts` (for production):
+        ```typescript
+        // src/environments/environment.prod.ts (VICS)
+        export const environment = {
+          production: true,
+          apiUrl: 'VICS_PRODUCTION_API_URL' // Placeholder - Replace with actual prod URL
+        };
+        ```
+*   **Connection File:** A central file provides the API base URL.
+    *   `src/app/connection.ts`:
+        ```typescript
+        // src/app/connection.ts (VICS)
+        import { environment } from '../environments/environment';
+        export const api: string = environment.apiUrl;
+        ```
+    *   **Usage:** Always import and use this `api` constant in services when constructing full API endpoint URLs.
+
+### 2.2. HTTP Client & Services
+*   **`HttpClientModule`:** Must be imported in `src/app/app.module.ts`.
+*   **Services:**
+    *   Inject `HttpClient` into services that need to make API calls.
+    *   Use the `api` constant from `src/app/connection.ts` and combine it with endpoint paths.
+    *   **Endpoint Definition:** Centralize API endpoint paths in `src/app/services/vics-api-endpoints.service.ts`.
+        *   *Example `VicsApiEndpointsService` (`src/app/services/vics-api-endpoints.service.ts`):*
+            ```typescript
+            import { Injectable } from '@angular/core';
+
+            @Injectable({ providedIn: 'root' })
+            export class VicsApiEndpointsService {
+              constructor() {}
+
+              // Auth Endpoints
+              login = () => `/auth/login`;
+              resetPassword = () => `/auth/reset-password`;
+
+              // Visitor Endpoints
+              getVisitors = () => `/visitors`;
+              // ... other VICS-specific endpoints
+            }
+            ```
+        *   *Example Service Usage (`src/app/services/visitor.service.ts`):*
+            ```typescript
+            import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+            import { Injectable } from '@angular/core';
+            import { Observable, throwError, of } from 'rxjs'; // 'of' for mock data if needed during dev
+            import { catchError, tap, delay } from 'rxjs/operators'; // 'delay' for mock data
+            import { api } from '../connection';
+            import { VicsApiEndpointsService } from './vics-api-endpoints.service';
+            import Swal from 'sweetalert2';
+            // import { Visitor } from '../models/visitor.model'; // Ensure you have your models
+
+            @Injectable({ providedIn: 'root' })
+            export class VisitorService {
+              constructor(
+                private http: HttpClient,
+                private apiEndpoints: VicsApiEndpointsService
+              ) {}
+
+              getVisitors(): Observable<any[]> { // Replace 'any' with your Visitor model
+                // Replace with actual HTTP call when backend is ready
+                // return of(this.mockVisitors).pipe(delay(800)); // Example mock data usage
+                return this.http.get<any[]>(api + this.apiEndpoints.getVisitors()).pipe(
+                  catchError(err => this.handleError(err, 'Failed to retrieve visitors'))
+                );
+              }
+
+              private handleError(error: HttpErrorResponse, message: string): Observable<never> {
+                console.error(`Service Error - ${message}:`, error); // Log detailed error for developers
+                Swal.fire({ // Use SweetAlert2 for user-facing error
+                  icon: 'error',
+                  title: 'Error',
+                  text: `${message}: ${error.error?.message || error.message || 'Unknown server error'}`,
+                  confirmButtonText: 'Ok'
+                });
+                return throwError(() => new Error(`${message}: ${error.message || 'Server error'}`));
+              }
+            }
+            ```
+
+### 2.3. Token-Based Authentication
+*   **`AuthService` (`src/app/services/auth.service.ts`):**
+    *   Handles login requests (HTTP POST to `api + this.apiEndpoints.login()`).
+        *   **IMPORTANT:** The backend expects credentials in a specific casing (e.g., `Username` and `Password`, or `username` and `password`). This *must* be confirmed with seniors and implemented accordingly in the request payload.
+    *   Stores the JWT in `localStorage` (key: `'vics_auth_token'`).
+    *   Stores user data in `localStorage` (key: `'vics_user_data'`).
+    *   Provides methods: `login()`, `logout()`, `getToken()`, `getUserData()`, `isLoggedIn()`, `resetPassword()`.
+    *   **Login/ResetPassword methods:** Must be updated to make actual HTTP calls, removing mock logic.
+*   **`TokenInterceptor` (`src/app/services/token.interceptor.ts`):**
+    *   Provided in `AppModule` via `HTTP_INTERCEPTORS`.
+    *   Automatically adds `Authorization: Bearer <token>` header to outgoing API requests if `authService.getToken()` returns a token.
+    *   **Global 401 Unauthorized Error Handling:**
+        *   If a 401 response is received *and a token was sent*:
+            1.  Calls `authService.logout()` to clear session data.
+            2.  Navigates the user to the `/login` page.
+            3.  Displays a "Session Expired" notification using **`SweetAlert2`**.
+*   **`AuthGuard` (`src/app/services/auth.guard.ts`):**
+    *   Protects routes. Checks `authService.isLoggedIn()`. Redirects to `/login` if not authenticated, including `returnUrl` query parameter.
+*   **`RoleGuard` (`src/app/services/role.guard.ts`):**
+    *   Protects routes based on user roles defined in the route data.
+
+---
+
+## 3. Code Structure & Modules
+
+*   **Standard Angular Structure:**
+    *   `src/app/components/`: Shared/dumb components (e.g., `error-toast` if it were kept, but it's planned for removal).
+    *   `src/app/layout/`: Components for main application layout (`admin-sidebar`, `admin-navbar`, `admin-layout`).
+    *   `src/app/models/`: TypeScript interfaces for data structures (`visitor.model.ts`, `user.model.ts`, etc.).
+    *   `src/app/services/`: Application-wide services.
+*   **`AppModule` (`src/app/app.module.ts`):** The root module.
+*   **`AdminLayoutComponent`:** Used as a wrapper for authenticated admin pages, containing the sidebar, navbar, and main content area with `<router-outlet>`.
+*   **`app.component.html`:** Contains global `<router-outlet>` and the `<ngx-spinner>` component.
+
+---
+
+## 4. State Management (Simple)
+
+*   For simple cross-component communication or shared UI state (e.g., sidebar visibility, global search terms), consider using **Angular Signals** within a shared service (e.g., `UtilsService`, if created).
+
+---
+
+## 5. Error Handling & Notifications
+
+*   **Primary Notification Library:** **`SweetAlert2`**.
+    *   Must be installed: `npm install sweetalert2`.
+    *   Use for all user-facing messages: success, errors, warnings, info, confirmations.
+    *   Example: `Swal.fire('Success!', 'Operation completed.', 'success');`
+*   **HTTP Error Handling in Services:**
+    *   Use the `catchError` operator from RxJS in service methods that make HTTP calls.
+    *   The `handleError` private method within services should:
+        1.  Log the detailed `HttpErrorResponse` to the console for developers.
+        2.  Use `Swal.fire` to display a user-friendly error message.
+*   **Global 401 Errors:** Handled by the `TokenInterceptor` using `SweetAlert2`.
+*   **`ErrorService` and `ErrorToastComponent`:** These are to be **removed** from the project, with all error/info/warning popups handled by `SweetAlert2`.
+
+---
+
+## 6. Global Loading Indicator
+
+*   **Library:** **`ngx-spinner`**.
+    *   Installed: `npm install ngx-spinner`.
+    *   `NgxSpinnerModule.forRoot({ type: 'ball-scale-multiple' })` imported in `AppModule`.
+    *   `<ngx-spinner>` tag is placed in `app.component.html` for global availability.
+*   **`SpinnerService` (`src/app/services/spinner.service.ts`):**
+    *   Manages showing/hiding the spinner.
+    *   Integrates with Angular Router events (`NavigationStart`, `NavigationEnd`, etc.) to automatically show spinner during route changes.
+*   **`LoadingInterceptor` (`src/app/services/loading.interceptor.ts`):**
+    *   Provided in `AppModule` via `HTTP_INTERCEPTORS` (after `TokenInterceptor`).
+    *   Automatically shows the spinner before an HTTP request (if not a navigation-triggered spinner and not for specific excluded URLs like `/notifications`) and hides it on completion or error.
+    *   Uses `spinnerService.show()`, `spinnerService.hide()`, and `spinnerService.forceHide()`.
+
+---
+
+## 7. Styling
+
+*   **Global Styles:** `src/styles.css`. Contains global theme overrides and application-wide styles (e.g., VICS theme colors).
+*   **Component-Specific Styles:** Each component has its own `.css` file.
+*   **External Theme:**
+    *   Theme CSS files (e.g., `src/assets/vendor/css/core.css`, `theme-default.css`) are included via the `styles` array in `angular.json`.
+    *   FontAwesome CSS is linked directly in `src/index.html`.
+    *   `ngx-spinner` CSS (e.g., `node_modules/ngx-spinner/animations/ball-scale-multiple.css`) is included via `styles` array in `angular.json`.
+
+---
+
+## 8. External Theme JavaScript
+
+*   Theme-specific JavaScript files like `helpers.js`, `theme-config.js`, `menu.js` are included via the `scripts` array in `angular.json`.
+*   Ensure `theme-config.js` (or equivalent) is listed before other scripts that depend on its global configuration.
+*   Strive to use Angular-native solutions for UI interactions where possible.
+
+---
+
+## 9. Coding Conventions & Best Practices
+
+*   **TypeScript:**
+    *   Adhere to `strict` mode in `tsconfig.json`.
+    *   Use strong typing; avoid `any`.
+    *   Define interfaces/types for all data structures in `src/app/models/`.
+*   **Naming Conventions:**
+    *   **Classes, Interfaces, Enums, Types:** PascalCase (e.g., `VisitorService`, `IVisitor`).
+    *   **Methods, Functions, Variables, Properties:** camelCase (e.g., `getVisitors()`, `currentVisitor`).
+    *   **File Names:** Kebab-case (e.g., `visitor-logbook.component.ts`).
+    *   Append type to filenames: `.component.ts`, `.service.ts`, `.pipe.ts`, `.guard.ts`, `.module.ts`, `.model.ts`.
+*   **Imports:** Organize (Angular core, third-party, application-specific).
+*   **Components:** Favor smart/container and dumb/presentational patterns. `@Input()` / `@Output()`.
+*   **Services:** `providedIn: 'root'`. Single Responsibility.
+*   **RxJS:** Unsubscribe from observables (e.g., `takeUntil`, `async` pipe, manual `unsubscribe()` in `ngOnDestroy`). `finalize` operator is useful with `SpinnerService` to ensure spinner is hidden.
+*   **Comments:** Clear and concise for complex or non-obvious logic.
+
+---
+
+## 10. Key Libraries to Use
+
+*   **`@angular/common/http`:** For all API calls.
+*   **`@angular/forms`:** For template-driven or reactive forms.
+*   **`@angular/router`:** For routing.
+*   **`rxjs` (& `rxjs/operators`):** For reactive programming.
+*   **`sweetalert2`:** For all user notifications (errors, success, info, warnings).
+*   **`ngx-spinner`:** For global loading indicators.
+*   **`@fortawesome/fontawesome-free`:** For icons.
+
+---
+
+**REMEMBER THIS!**
+*   **Consistency is key.** Adhere to these guidelines.
+*   **Ask for clarification** if anything is unclear.
+*   **Backend API Contract:** Always confirm expected request/response formats (payload structure, casing) with the backend team or documentation.
+*   **Mock Data:** Services currently use mock data with `of(...).pipe(delay(...))`. This should be replaced with actual HTTP calls to the backend. The commented-out HTTP call sections in services serve as a template. For now let's use this mockup.
+
+---

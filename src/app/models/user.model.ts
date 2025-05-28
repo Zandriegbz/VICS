@@ -9,6 +9,7 @@ export interface LoginResponse {
   success: boolean;
   message: string;
   user?: User;
+  token?: string;
 }
 
 export interface PasswordResetResponse {
