@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, tap, delay } from 'rxjs/operators';
 import { Notification } from '../models/notification.model';
-import { ErrorService } from './error.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { api } from '../connection';
 import Swal from 'sweetalert2';
@@ -42,7 +41,6 @@ export class NotificationService {
   ];
 
   constructor(
-    private errorService: ErrorService,
     private http: HttpClient,
     private apiEndpoints: VicsApiEndpointsService
   ) { }
@@ -159,9 +157,6 @@ export class NotificationService {
 
   private handleError(error: HttpErrorResponse, message: string): Observable<never> {
     console.error(error);
-    
-    // For backward compatibility, also use the ErrorService
-    this.errorService.handleHttpError(error);
     
     // Show SweetAlert2 notification
     Swal.fire({

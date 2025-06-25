@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { ErrorService } from '../services/error.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-forgot-password',
@@ -14,18 +14,27 @@ export class ForgotPasswordComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
-    private errorService: ErrorService
+    private router: Router
   ) {}
 
   onSubmit() {
     if (!this.email) {
-      this.errorService.showWarning('Email Required', 'Please enter your email address.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Email Required',
+        text: 'Please enter your email address.',
+        confirmButtonText: 'Ok'
+      });
       return;
     }
 
     if (!this.validateEmail(this.email)) {
-      this.errorService.showWarning('Invalid Email', 'Please enter a valid email address.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Email',
+        text: 'Please enter a valid email address.',
+        confirmButtonText: 'Ok'
+      });
       return;
     }
 
@@ -35,18 +44,33 @@ export class ForgotPasswordComponent {
       next: (result) => {
         this.isLoading = false;
         if (result.success) {
-          this.errorService.showInfo('Password Reset', result.message);
+          Swal.fire({
+            icon: 'info',
+            title: 'Password Reset',
+            text: result.message,
+            confirmButtonText: 'Ok'
+          });
           // Redirect to login after 3 seconds
           setTimeout(() => {
             this.router.navigate(['/login']);
           }, 3000);
         } else {
-          this.errorService.showError('Reset Failed', result.message);
+          Swal.fire({
+            icon: 'error',
+            title: 'Reset Failed',
+            text: result.message,
+            confirmButtonText: 'Ok'
+          });
         }
       },
       error: (error) => {
         this.isLoading = false;
-        this.errorService.showError('Reset Failed', 'An unexpected error occurred. Please try again later.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Reset Failed',
+          text: 'An unexpected error occurred. Please try again later.',
+          confirmButtonText: 'Ok'
+        });
       }
     });
   }

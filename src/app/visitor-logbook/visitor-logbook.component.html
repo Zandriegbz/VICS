@@ -68,6 +68,40 @@
     </div>
   </div>
 
+  <!-- Auto-refresh Status Bar -->
+  <div class="auto-refresh-status-bar mb-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="auto-refresh-info">
+        <div class="d-flex align-items-center gap-3">
+          <div class="last-refresh" *ngIf="lastRefreshTime">
+            <small class="text-muted">
+              <i class="fas fa-clock"></i>
+              Last updated: {{ lastRefreshTime | date:'MMM d, h:mm a' }}
+            </small>
+          </div>
+          
+          <div class="refresh-status">
+            <small class="text-muted">
+              <i class="fas fa-sync-alt fa-spin text-success"></i>
+              Auto-refresh: Next in {{ getTimeUntilNextRefresh() }} min
+            </small>
+          </div>
+        </div>
+      </div>
+      
+      <div class="manual-refresh">
+        <button 
+          class="btn btn-outline-primary btn-sm"
+          (click)="manualRefresh()"
+          title="Refresh now"
+        >
+          <i class="fas fa-sync-alt"></i>
+          Refresh Now
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Results Summary -->
   <div class="results-summary mb-3">
     <small class="text-muted">
@@ -146,9 +180,12 @@
   <div *ngFor="let visitor of paginatedVisitors; let i = index" class="visitor-card card mb-3">
     <div class="visitor-header card-header" (click)="toggleVisitor(i)">
       <div class="visitor-info">
+        <div class="visitor-name-section">
         <strong>{{ visitor.lastname }}, {{ visitor.firstname }}</strong>
+          <small class="visitor-timestamp">{{ visitor.date | date:'MMM d' }} at {{ visitor.time }}</small>
+        </div>
         <i
-          class="fas"
+          class="fas chevron-icon me-3"
           [ngClass]="{
             'fa-chevron-down': !visitor.open,
             'fa-chevron-up': visitor.open
@@ -186,8 +223,13 @@
           </div>
         </div>
       </div>
-      <div class="visitor-actions mt-3 text-end">
-        <button class="btn btn-primary">Print</button>
+      
+      <!-- Print button below visitor details -->
+      <div class="visitor-print-action">
+        <button class="btn btn-primary">
+          <i class="fas fa-print me-2"></i>
+          Print
+        </button>
       </div>
     </div>
   </div>

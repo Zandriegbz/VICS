@@ -39,7 +39,6 @@
               [(ngModel)]="username"
               required
               placeholder="Enter your username"
-              [class.error]="showError && !username"
               autocomplete="username"
             />
             <div class="input-focus-border"></div>
@@ -60,7 +59,6 @@
               [(ngModel)]="password"
               required
               placeholder="Enter your password"
-              [class.error]="showError && !password"
               autocomplete="current-password"
             />
             <div class="input-focus-border"></div>
@@ -89,11 +87,6 @@
             Signing in...
           </span>
         </button>
-
-        <div class="error-message" *ngIf="errorMessage" [@fadeIn]>
-          <i class="fas fa-exclamation-triangle"></i>
-          {{ errorMessage }}
-        </div>
       </form>
     </div>
 

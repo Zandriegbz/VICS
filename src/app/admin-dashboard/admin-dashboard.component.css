@@ -1,13 +1,3 @@
-/* .content styles are now handled by admin-layout.component.css */
-
-.dashboard-overview {
-  /* Add any specific padding for dashboard-overview if needed, otherwise layout padding applies */
-  /* padding-top: 0; */ /* This might no longer be needed if layout padding is sufficient */
-}
-
-/* NEW LAYOUT STRUCTURE */
-
-/* Enhanced Main Chart Container - Task 2 */
 .main-chart-container {
   background-color: var(--bs-card-bg, #ffffff);
   padding: 1.5rem;
@@ -18,12 +8,12 @@
   overflow: hidden;
 }
 
-/* Chart Header Styles */
+/* chart header */
 .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center; 
-  margin-bottom: 1.25rem; /* Reduced for more compact spacing */
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -54,7 +44,6 @@
   font-weight: 500;
 }
 
-/* Chart Controls Container */
 .chart-controls {
   display: flex;
   align-items: center;
@@ -62,7 +51,6 @@
   flex-wrap: wrap;
 }
 
-/* Time Period Selector */
 .time-period-selector {
   display: flex;
   background-color: #f8f9fa;
@@ -94,7 +82,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Export Button */
 .export-btn {
   padding: 0.5rem;
   border: 1px solid #e0e0e0;
@@ -116,14 +103,12 @@
   background-color: rgba(176, 48, 61, 0.05);
 }
 
-/* Secondary Items Grid - Task 2 */
 .secondary-items-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.75rem;
 }
 
-/* Chart Title Styling */
 .chart-title {
   font-size: 1.2rem;
   font-weight: 600;
@@ -131,13 +116,12 @@
   color: var(--bs-emphasis-color, #2d2d2d);
 }
 
-/* Weekly Summary Stats */
 .weekly-summary {
   display: flex;
   justify-content: space-around;
   gap: 1.5rem;
   flex-wrap: wrap;
-  margin-bottom: 1.25rem; /* Reduced spacing */
+  margin-bottom: 1.25rem;
   background-color: #f8f9fa;
   padding: 0.75rem;
   border-radius: 8px;
@@ -183,7 +167,6 @@
   color: #EA5455;
 }
 
-/* Progress Bar */
 .progress-bar {
   width: 100%;
   height: 4px;
@@ -200,18 +183,16 @@
   transition: width 0.3s ease;
 }
 
-/* ENHANCED CHART STYLES - Task 3 */
 .enhanced-chart {
-  margin-bottom: 1rem; /* Reduced spacing */
+  margin-bottom: 1rem;
 }
 
 .chart-grid {
   display: flex;
   gap: 1rem;
-  height: 280px; /* Reduced height */
+  height: 280px;
 }
 
-/* Y-axis Labels */
 .y-axis-labels {
   display: flex;
   flex-direction: column;
@@ -219,8 +200,8 @@
   align-items: flex-end;
   padding-right: 0.5rem;
   width: 40px;
-  height: 220px; /* Reduced height */
-  margin-top: 30px; /* Reduced spacing */
+  height: 220px;
+  margin-top: 30px;
 }
 
 .y-label {
@@ -230,7 +211,6 @@
   line-height: 1;
 }
 
-/* Chart Area */
 .chart-area {
   flex: 1;
   position: relative;
@@ -239,13 +219,12 @@
   flex-direction: column;
 }
 
-/* Grid Lines */
 .grid-lines {
   position: absolute;
-  top: 30px; /* Reduced spacing */
+  top: 30px;
   left: 0;
   right: 0;
-  height: 220px; /* Reduced height */
+  height: 220px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -259,15 +238,14 @@
   width: 100%;
 }
 
-/* Enhanced Chart Bars Container */
 .chart-bars {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  height: 220px; /* Reduced height */
+  height: 220px;
   padding: 0 1rem;
   gap: 0.5rem;
-  margin-top: 30px; /* Reduced spacing */
+  margin-top: 30px;
   position: relative;
   z-index: 2;
 }
@@ -286,7 +264,6 @@
   transform: translateY(-2px);
 }
 
-/* Bar Value Display */
 .bar-value {
   font-size: 0.9rem;
   font-weight: 700;
@@ -297,7 +274,6 @@
   text-align: center;
 }
 
-/* Bar Change Indicator */
 .bar-change {
   font-size: 0.7rem;
   font-weight: 600;
@@ -338,7 +314,6 @@
   font-weight: 700;
 }
 
-/* Enhanced Chart Bar */
 .chart-bar {
   width: 100%;
   max-width: 45px;
@@ -395,7 +370,6 @@
   box-shadow: 0 4px 12px rgba(234, 84, 85, 0.3);
 }
 
-/* Bar Labels */
 .bar-label {
   font-size: 0.75rem;
   font-weight: 600;
@@ -404,7 +378,6 @@
   text-align: center;
 }
 
-/* Chart Legend */
 .chart-legend {
   display: flex;
   justify-content: space-between;
@@ -458,7 +431,6 @@
   background-color: rgba(176, 48, 61, 0.05);
 }
 
-/* CUSTOM DONUT CHART STYLES - Task 4 */
 .custom-donut-chart {
   display: flex;
   flex-direction: column;
@@ -536,7 +508,7 @@
   font-weight: 500;
 }
 
-/* ENHANCED CARD STYLES */
+/* card styles */
 
 .critical-card {
   border-left: 4px solid #EA5455;
@@ -562,39 +534,36 @@
 
  .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Increased minimum width */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.75rem;
-  margin-bottom: 2rem; /* Add bottom margin to reduce empty space */
+  margin-bottom: 2rem;
 }
 
-/* Styles for card-box, assuming .card from core.css provides base styling */
 .card.card-box {
-  background-color: var(--bs-card-bg, #ffffff); /* Pure white background for cleaner look */
-  border: none; /* Remove border for modern look */
-  border-radius: 12px; /* Larger, more modern radius */
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.04); /* Very subtle shadow */
+  background-color: var(--bs-card-bg, #ffffff);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.04);
   text-align: left;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  overflow: hidden; /* Ensure content stays within rounded corners */
-  height: 100%; /* Ensure all cards have the same height */
+  overflow: hidden;
+  height: 100%;
 }
 
 .card.card-box:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08); /* Slightly stronger shadow on hover */
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Assuming .card-body for padding and layout within the card */
 .card-box .card-body {
-  padding: 1.5rem; /* Increased padding */
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  min-height: 220px; /* Increased minimum height */
+  min-height: 220px;
   position: relative;
-  z-index: 1; /* Ensure content is above any decorative elements */
+  z-index: 1;
 }
 
-/* New decorative element for visual interest */
 .card-box .card-body::before {
   content: '';
   position: absolute;
@@ -609,18 +578,18 @@
 }
 
 .card-box .card-icon-container {
-  width: 60px; /* Larger icon container */
+  width: 60px;
   height: 60px;
-  border-radius: 12px; /* Square with rounded corners for modern look */
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1.25rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Very subtle shadow */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .card-box .icon {
-  font-size: 1.75rem; /* Larger icon */
+  font-size: 1.75rem;
 }
 
 .card-content {
@@ -631,22 +600,22 @@
 
 .card-box .card-title {
   margin-bottom: 0.75rem;
-  font-size: 1rem; /* Slightly larger title */
-  color: var(--bs-body-color, #6e6b7b); /* More muted color */
+  font-size: 1rem;
+  color: var(--bs-body-color, #6e6b7b);
   font-weight: 600;
-  text-transform: uppercase; /* Add text transform for visual interest */
+  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .card-box .card-value {
-  font-size: 2.25rem; /* Much larger value for emphasis */
-  font-weight: 700; /* Bolder value */
+  font-size: 2.25rem;
+  font-weight: 700;
   color: var(--bs-emphasis-color, #000);
-  margin-bottom: 0.75rem; /* Reduced margin to accommodate stats */
+  margin-bottom: 0.75rem;
   line-height: 1;
 }
 
-/* Card stats styles */
+/* card stats */
 .card-stats {
   margin-bottom: 1.5rem;
   font-size: 0.85rem;
@@ -694,12 +663,12 @@
 
 .btn.btn-primary .fas {
   font-size: 0.8em;
-  margin-left: 0.5rem; /* Increased spacing */
+  margin-left: 0.5rem;
   transition: transform 0.2s ease;
 }
 
 .btn.btn-primary:hover .fas {
-  transform: translateX(3px); /* Animate arrow on hover */
+  transform: translateX(3px);
 }
 
 .mt-auto {
@@ -710,7 +679,7 @@
   margin-left: 0.25rem !important;
 }
 
-/* Enhanced color palette for backgrounds */
+/* color palette */
 .bg-primary { 
   background: linear-gradient(135deg, #7367F0, #9e95f5) !important; 
 }
@@ -733,7 +702,7 @@
   color: white !important; 
 }
 
-/* MEDIA QUERIES FOR RESPONSIVE DESIGN */
+/* media queries */
 @media (max-width: 768px) {
   .main-chart-container {
     margin-bottom: 1rem;

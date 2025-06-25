@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, tap, delay } from 'rxjs/operators';
 import { Visitor } from '../models/visitor.model';
-import { ErrorService } from './error.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { api } from '../connection';
 import Swal from 'sweetalert2';
@@ -12,7 +11,7 @@ import { VicsApiEndpointsService } from './vics-api-endpoints.service';
   providedIn: 'root'
 })
 export class VisitorService {
-  // Mock data for development purposes
+  // mock data for development
   private mockVisitors: Visitor[] = [
     {
       clientId: '001',
@@ -22,7 +21,7 @@ export class VisitorService {
       position: 'Manager',
       agency: 'ABC Corporation',
       purpose: 'Meeting with HR',
-      date: '2023-05-15',
+      date: '2025-06-09',
       time: '09:30',
       status: 'Printed',
       open: false
@@ -35,10 +34,10 @@ export class VisitorService {
       position: 'Developer',
       agency: 'Tech Solutions',
       purpose: 'Job Interview',
-      date: '2023-05-15',
-      time: '13:15',
+      date: '2025-06-09',
+      time: '14:15',
       status: 'Not Printed',
-      open: true
+      open: false
     },
     {
       clientId: '003',
@@ -48,7 +47,7 @@ export class VisitorService {
       position: 'Citizen',
       agency: 'Self',
       purpose: 'Permit Application',
-      date: '2023-05-15',
+      date: '2025-06-09',
       time: '10:00',
       status: 'Printed',
       open: false
@@ -61,37 +60,36 @@ export class VisitorService {
       position: 'Consultant',
       agency: 'Wilson Consulting',
       purpose: 'Document Submission',
-      date: '2023-05-15',
-      time: '14:45',
+      date: '2025-06-09',
+      time: '15:45',
       status: 'Not Printed',
-      open: true
+      open: false
     },
     {
-      clientId: '005',
-      firstname: 'Robert',
-      lastname: 'Miller',
-      middleInitial: 'E',
+      clientId: '006',
+      firstname: 'John Doe',
+      lastname: 'Smith',
+      middleInitial: 'C',
       position: 'Architect',
       agency: 'Design Firm',
       purpose: 'Consultation',
-      date: '2023-05-15',
-      time: '11:30',
-      status: 'Printed',
+      date: '2025-06-16',
+      time: '12:30',
+      status: 'Not Printed',
       open: false
     }
   ];
 
   constructor(
-    private errorService: ErrorService,
     private http: HttpClient,
     private apiEndpoints: VicsApiEndpointsService
   ) { }
 
   getVisitors(): Observable<Visitor[]> {
-    // Use mock data in development mode
+    // mock data for development
     return of(this.mockVisitors).pipe(delay(800));
     
-    // Uncomment when backend is ready
+    // uncomment for backend
     /*
     return this.http.get<Visitor[]>(`${api}${this.apiEndpoints.getVisitors()}`).pipe(
       catchError(err => this.handleError(err, 'Failed to retrieve visitors'))
@@ -100,7 +98,7 @@ export class VisitorService {
   }
 
   addVisitor(visitor: Visitor): Observable<Visitor> {
-    // Use mock data in development mode
+    // mock data for development
     const newVisitor: Visitor = {
       ...visitor,
       clientId: 'MOCK-' + Math.floor(Math.random() * 10000).toString(),
@@ -121,7 +119,7 @@ export class VisitorService {
       })
     );
     
-    // Uncomment when backend is ready
+    // uncomment for the backend
     /*
     return this.http.post<Visitor>(`${api}${this.apiEndpoints.addVisitor()}`, visitor).pipe(
       tap(response => {
@@ -138,7 +136,7 @@ export class VisitorService {
   }
 
   updateVisitor(visitor: Visitor): Observable<Visitor> {
-    // Use mock data in development mode
+    // mock data for development
     const index = this.mockVisitors.findIndex(v => v.clientId === visitor.clientId);
     if (index !== -1) {
       this.mockVisitors[index] = visitor;
@@ -156,7 +154,7 @@ export class VisitorService {
       })
     );
     
-    // Uncomment when backend is ready
+    // uncomment for the backend
     /*
     return this.http.put<Visitor>(`${api}${this.apiEndpoints.updateVisitor(visitor.clientId)}`, visitor).pipe(
       tap(response => {
@@ -173,7 +171,7 @@ export class VisitorService {
   }
 
   deleteVisitor(clientId: string): Observable<void> {
-    // Use mock data in development mode
+    // mock data for development
     const index = this.mockVisitors.findIndex(v => v.clientId === clientId);
     if (index !== -1) {
       this.mockVisitors.splice(index, 1);
@@ -191,7 +189,7 @@ export class VisitorService {
       })
     );
     
-    // Uncomment when backend is ready
+    // uncomment for the backend
     /*
     return this.http.delete<void>(`${api}${this.apiEndpoints.deleteVisitor(clientId)}`).pipe(
       tap(response => {
@@ -207,13 +205,12 @@ export class VisitorService {
     */
   }
 
+
+
   private handleError(error: HttpErrorResponse, message: string): Observable<never> {
     console.error(error);
     
-    // For backward compatibility, also use the ErrorService
-    this.errorService.handleHttpError(error);
-    
-    // Show SweetAlert2 notification
+    // sweetalert notif
     Swal.fire({
       icon: 'error',
       title: 'Error',

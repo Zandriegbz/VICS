@@ -1,10 +1,7 @@
-<!-- Inserted here -->
 
 <div class="dashboard-overview">
-  
-  <!-- Enhanced Main Chart Container - Full Width -->
   <div class="main-chart-container">
-    <!-- Chart Header with Controls -->
+    <!-- chart header -->
     <div class="chart-header">
       <div class="chart-title-section">
         <h3 class="chart-title">
@@ -15,7 +12,6 @@
       </div>
       
       <div class="chart-controls">
-        <!-- Time Period Selector -->
         <div class="time-period-selector">
           <button 
             *ngFor="let period of timePeriods" 
@@ -26,16 +22,14 @@
           </button>
         </div>
         
-        <!-- Export Button -->
+        <!-- export button -->
         <button class="export-btn" (click)="exportChart()">
           <i class="fas fa-download"></i>
         </button>
       </div>
     </div>
 
-    <!-- Weekly Summary Stats Row -->
     <div class="weekly-summary">
-      <!-- Today's Visitors moved here with the same style as other summary items -->
       <div class="summary-item">
         <span class="summary-label">Today's Visitors</span>
         <span class="summary-value">{{ currentVisitors }}</span>
@@ -62,10 +56,8 @@
       </div>
     </div>
 
-    <!-- Enhanced Chart with Grid and Values -->
     <div class="enhanced-chart">
       <div class="chart-grid">
-        <!-- Y-axis labels -->
         <div class="y-axis-labels">
           <span class="y-label">150</span>
           <span class="y-label">100</span>
@@ -73,23 +65,21 @@
           <span class="y-label">0</span>
         </div>
         
-        <!-- Chart area with grid lines -->
+        <!-- chart area -->
         <div class="chart-area">
           <div class="grid-lines">
             <div class="grid-line" *ngFor="let line of [1,2,3,4]"></div>
           </div>
           
-          <!-- Enhanced Chart Bars -->
+          <!-- chart bars -->
           <div class="chart-bars">
             <div 
               *ngFor="let day of totalVisitorsTrendData; let i = index"
               class="chart-bar-container"
               (click)="onBarClick(day)">
               
-              <!-- Value display above bar -->
               <div class="bar-value">{{ day.value }}</div>
               
-              <!-- Change indicator -->
               <div class="bar-change" [ngClass]="day.status">
                 <i class="fas" [ngClass]="{
                   'fa-arrow-up': day.change && day.change > 0,
@@ -99,7 +89,6 @@
                 {{ day.change && day.change > 0 ? '+' : '' }}{{ day.change }}%
               </div>
               
-              <!-- The actual bar -->
               <div 
                 class="chart-bar" 
                 [ngClass]="day.status"
@@ -107,7 +96,6 @@
                 [attr.data-value]="day.value">
               </div>
               
-              <!-- Day label -->
               <div class="bar-label">{{ day.name }}</div>
             </div>
           </div>
@@ -115,7 +103,6 @@
       </div>
     </div>
 
-    <!-- Chart Legend -->
     <div class="chart-legend">
       <div class="legend-items">
         <div class="legend-item" *ngFor="let item of chartLegend">
@@ -134,14 +121,11 @@
     </div>
   </div>
 
-  <!-- Secondary Items Grid -->
   <div class="secondary-items-grid">
     
-    <!-- Visitor Breakdown Donut Chart -->
     <div class="card card-box chart-container">
       <div class="card-body">
         <h3 class="chart-title">Visitor Breakdown</h3>
-        <!-- Custom Donut Chart Placeholder -->
         <div class="custom-donut-chart" *ngIf="visitorBreakdown">
           <div class="donut-chart">
             <div class="donut-segment segment-1" style="--percentage: 28;"></div>
@@ -162,7 +146,6 @@
       </div>
     </div>
 
-    <!-- Completed Meetings Card (Enhanced) -->
     <div class="card card-box">
       <div class="card-body">
         <div class="card-icon-container bg-warning">
@@ -187,7 +170,6 @@
       </div>
     </div>
 
-    <!-- Defaulted Visitors Card (Enhanced) -->
     <div class="card card-box critical-card">
       <div class="card-body">
         <div class="card-icon-container bg-danger">
@@ -212,7 +194,6 @@
       </div>
     </div>
 
-    <!-- Others - Coming Soon Card -->
     <div class="card card-box coming-soon-card">
       <div class="card-body">
         <div class="card-icon-container bg-secondary">

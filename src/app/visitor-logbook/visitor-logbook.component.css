@@ -35,8 +35,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.75rem; /* More generous padding */
-  background: #fafafa; /* Slightly warmer background */
-  color: #333;
+  background: #B0303D; /* VICS brand color for header */
+  color: white; /* White text for contrast */
   cursor: pointer;
   border-bottom: none; /* Remove default border */
   transition: background-color 0.2s ease;
@@ -54,15 +54,27 @@
   flex-grow: 1;
   display: flex;
   align-items: center;
-  gap: 15px; /* Increased gap */
+  justify-content: space-between;
   font-size: 1rem;
   font-weight: 500;
 }
 
-.visitor-info strong {
+.visitor-name-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.visitor-name-section strong {
   font-weight: 600;
   font-size: 1.1rem;
-  color: #2c3e50; /* Darker, more readable color */
+  color: white; /* White text for header */
+}
+
+.visitor-timestamp {
+  color: rgba(255, 255, 255, 0.9); /* Slightly transparent white for timestamp */
+  font-size: 0.875rem;
+  font-weight: 400;
 }
 
 /* Status badge styling */
@@ -151,12 +163,47 @@
     transform: translateY(-1px); /* Subtle lift on hover */
 }
 
+/* Print button below visitor details */
+.visitor-print-action {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f0f0f0; /* Subtle separator line */
+}
+
+.visitor-print-action .btn {
+  width: 100%; /* Full width */
+  padding: 0.75rem 1.5rem; /* Smaller height with good padding */
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  background: white; /* White background for outline style */
+  border: 1px solid #EA5455; /* Gradient start color for border */
+  color: #EA5455; /* Gradient start color for text and icon */
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04); /* Subtle default shadow */
+}
+
+.visitor-print-action .btn:hover {
+  background: linear-gradient(135deg, #EA5455, #f48182); /* Beautiful red-to-pink gradient */
+  border-color: #EA5455; /* Gradient start color for border */
+  color: white; /* White text and icon for contrast */
+  transform: translateY(-1px); /* Subtle lift */
+  box-shadow: 0 4px 12px rgba(234, 84, 85, 0.3); /* Gradient-colored shadow */
+}
+
+.visitor-print-action .btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(176, 48, 61, 0.2); /* Focus outline */
+}
+
 /* Style for the chevron icons */
-.visitor-info .fas {
+.visitor-info .chevron-icon {
   font-size: 0.8em;
-  margin-left: 8px;
-  color: #B0303D;
+  color: white; /* White icon to match header text */
   transition: transform 0.3s ease-in-out;
+  margin-left: auto;
 }
 
 .visitor-info .fa-chevron-up {
@@ -165,7 +212,7 @@
 
 /* Adding hover effect to the entire header */
 .visitor-header.card-header:hover {
-  background-color: #f5f5f5; /* Subtle hover background */
+  background-color: #8C2631; /* Darker shade of brand color on hover */
 }
 
 /* Search and Filter Styles */
@@ -334,6 +381,106 @@
   background-color: #B0303D !important;
   border-color: #B0303D !important;
   color: white !important;
+}
+
+/* Auto-refresh Status Bar Styles */
+.auto-refresh-status-bar {
+  background-color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e8e8e8;
+  margin-bottom: 1rem;
+}
+
+.auto-refresh-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.refresh-toggle .btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.refresh-toggle .btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.refresh-toggle .btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+.refresh-toggle .btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.refresh-toggle .btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+.refresh-status small,
+.last-refresh small {
+  color: #6c757d;
+  font-weight: 400;
+}
+
+.refresh-status .fas,
+.last-refresh .fas {
+  margin-right: 0.25rem;
+}
+
+.manual-refresh .btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-color: #B0303D;
+  color: #B0303D;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.manual-refresh .btn:hover {
+  background-color: #F5D0D4;
+  border-color: #8C2631;
+  color: #8C2631;
+}
+
+/* Auto-refresh status indicator animation */
+.fa-sync-alt.fa-spin {
+  animation: fa-spin 2s infinite linear;
+}
+
+/* Status bar responsive behavior */
+@media (max-width: 768px) {
+  .auto-refresh-status-bar {
+    padding: 0.75rem 1rem;
+  }
+  
+  .auto-refresh-status-bar .d-flex {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start !important;
+  }
+  
+  .auto-refresh-info .d-flex {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .refresh-status,
+  .last-refresh {
+    margin-top: 0.25rem;
+  }
 }
 
 /* Responsive adjustments */

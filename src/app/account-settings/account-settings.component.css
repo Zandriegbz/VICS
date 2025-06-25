@@ -1,6 +1,6 @@
 .account-settings-backdrop {
   position: absolute;
-  top: 64px; /* Match navbar height */
+  top: 64px;
   right: 0;
   width: 320px;
   z-index: 1050;

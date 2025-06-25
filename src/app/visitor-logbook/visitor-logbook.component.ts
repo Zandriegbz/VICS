@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { VisitorService } from '../services/visitor.service';
 import { Visitor } from '../models/visitor.model';
 import { SpinnerService } from '../services/spinner.service';
-import { finalize } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { Subject, interval } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-visitor-logbook',
   templateUrl: './visitor-logbook.component.html',
   styleUrls: ['./visitor-logbook.component.css']
 })
-export class VisitorLogbookComponent implements OnInit {
+export class VisitorLogbookComponent implements OnInit, OnDestroy {
   // Filter properties
   searchTerm: string = '';
   selectedDate: string = '';
@@ -26,6 +28,12 @@ export class VisitorLogbookComponent implements OnInit {
   totalPages: number = 0;
   customPageInput: string = '';
   
+  // Auto-refresh properties
+  private destroy$ = new Subject<void>();
+  private autoRefreshInterval = 3 * 60 * 1000; // 3 minutes
+  lastRefreshTime: Date = new Date();
+  nextRefreshTime: Date = new Date();
+  
   // Expose Math to template
   Math = Math;
 
@@ -36,6 +44,145 @@ export class VisitorLogbookComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadVisitorData();
+    this.setupAutoRefresh();
+  }
+
+  ngOnDestroy(): void {
+    // Close all visitors when leaving the page
+    this.allVisitors.forEach(visitor => visitor.open = false);
+    
+    // Clean up auto-refresh subscription
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Set up auto-refresh functionality with 3-minute intervals
+   */
+  private setupAutoRefresh(): void {
+    // Update next refresh time
+    this.updateNextRefreshTime();
+    
+    // Set up interval for auto-refresh
+    interval(this.autoRefreshInterval)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.autoRefreshData();
+      });
+  }
+
+  /**
+   * Auto-refresh data without showing full loading spinner
+   */
+  private autoRefreshData(): void {
+    console.log('Auto-refreshing visitor data...');
+    
+    this.visitorService.getVisitors()
+      .pipe(
+        finalize(() => {
+          this.lastRefreshTime = new Date();
+          this.updateNextRefreshTime();
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          const previousCount = this.allVisitors.length;
+          
+          // Sort visitors by latest first
+          this.allVisitors = this.sortVisitorsByLatest(data);
+          
+          // Auto-open the latest visitor only if new visitors were added
+          const newCount = this.allVisitors.length;
+          if (newCount > previousCount) {
+            this.autoOpenLatestVisitor();
+            const newVisitorsCount = newCount - previousCount;
+            this.showAutoRefreshNotification(newVisitorsCount);
+          }
+          
+          this.applyFilters();
+        },
+        error: (error) => {
+          console.error('Auto-refresh failed:', error);
+          // Don't show error popup for auto-refresh failures to avoid interrupting user
+        }
+      });
+  }
+
+  /**
+   * Show subtle notification for auto-refresh updates
+   */
+  private showAutoRefreshNotification(newVisitorsCount: number): void {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+
+    Toast.fire({
+      icon: 'info',
+      title: `${newVisitorsCount} new visitor${newVisitorsCount > 1 ? 's' : ''} detected!`
+    });
+  }
+
+  /**
+   * Update next refresh time calculation
+   */
+  private updateNextRefreshTime(): void {
+    this.nextRefreshTime = new Date(Date.now() + this.autoRefreshInterval);
+  }
+
+
+
+  /**
+   * Manual refresh with user feedback
+   */
+  manualRefresh(): void {
+    if (!this.spinnerService.isCurrentlyNavigating()) {
+      this.spinnerService.show();
+    }
+    
+    this.visitorService.getVisitors()
+      .pipe(
+        finalize(() => {
+          if (!this.spinnerService.isCurrentlyNavigating()) {
+            this.spinnerService.hide();
+          }
+          this.lastRefreshTime = new Date();
+          this.updateNextRefreshTime();
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.allVisitors = data;
+          this.applyFilters();
+          
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Data refreshed successfully',
+            showConfirmButton: false,
+            timer: 1500
+          });
+        },
+        error: (error) => {
+          console.error('Manual refresh failed:', error);
+        }
+      });
+  }
+
+  /**
+   * Get time until next auto-refresh in minutes
+   */
+  getTimeUntilNextRefresh(): number {
+    const diffMs = this.nextRefreshTime.getTime() - Date.now();
+    return Math.max(0, Math.ceil(diffMs / (60 * 1000))); // Convert to minutes
   }
   
   loadVisitorData(): void {
@@ -49,17 +196,51 @@ export class VisitorLogbookComponent implements OnInit {
           if (!this.spinnerService.isCurrentlyNavigating()) {
             this.spinnerService.hide();
           }
+          this.lastRefreshTime = new Date();
+          this.updateNextRefreshTime();
         })
       )
       .subscribe({
         next: (data) => {
-          this.allVisitors = data;
+          // Sort visitors by latest first (date + time)
+          this.allVisitors = this.sortVisitorsByLatest(data);
+          
+          // Auto-open the first (latest) visitor card
+          this.autoOpenLatestVisitor();
+          
           this.applyFilters();
         },
         error: (error) => {
           console.error('Error loading visitor data:', error);
         }
       });
+  }
+
+  /**
+   * Sort visitors by latest date and time first
+   */
+  private sortVisitorsByLatest(visitors: Visitor[]): Visitor[] {
+    return visitors.sort((a, b) => {
+      // Combine date and time for accurate sorting
+      const dateTimeA = new Date(`${a.date} ${a.time}`);
+      const dateTimeB = new Date(`${b.date} ${b.time}`);
+      
+      // Sort in descending order (latest first)
+      return dateTimeB.getTime() - dateTimeA.getTime();
+    });
+  }
+
+  /**
+   * Auto-open the first (latest) visitor card
+   */
+  private autoOpenLatestVisitor(): void {
+    // Close all visitors first
+    this.allVisitors.forEach(visitor => visitor.open = false);
+    
+    // Open the first visitor (latest) if exists
+    if (this.allVisitors.length > 0) {
+      this.allVisitors[0].open = true;
+    }
   }
 
   toggleVisitor(index: number): void {

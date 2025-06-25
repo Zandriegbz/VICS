@@ -2,19 +2,16 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
-import { ErrorService } from './error.service';
 import { VicsApiEndpointsService } from './vics-api-endpoints.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
   let routerSpy: jasmine.SpyObj<Router>;
-  let errorServiceSpy: jasmine.SpyObj<ErrorService>;
   let apiEndpointsSpy: jasmine.SpyObj<VicsApiEndpointsService>;
 
   beforeEach(() => {
     const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
-    const errorServiceSpyObj = jasmine.createSpyObj('ErrorService', ['showError', 'handleHttpError']);
     const apiEndpointsSpyObj = jasmine.createSpyObj('VicsApiEndpointsService', ['login', 'resetPassword']);
     
     apiEndpointsSpyObj.login.and.returnValue('/auth/login');
@@ -25,7 +22,6 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: Router, useValue: routerSpyObj },
-        { provide: ErrorService, useValue: errorServiceSpyObj },
         { provide: VicsApiEndpointsService, useValue: apiEndpointsSpyObj }
       ]
     });
@@ -33,7 +29,6 @@ describe('AuthService', () => {
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    errorServiceSpy = TestBed.inject(ErrorService) as jasmine.SpyObj<ErrorService>;
     apiEndpointsSpy = TestBed.inject(VicsApiEndpointsService) as jasmine.SpyObj<VicsApiEndpointsService>;
   });
 

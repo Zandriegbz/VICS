@@ -18,7 +18,7 @@
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
-/* LEFT PANEL - Enhanced with modern design */
+/* left container for illus */
 .left-panel {
   flex: 3;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
@@ -103,7 +103,7 @@
   z-index: 1;
 }
 
-/* RIGHT PANEL - Modern card design */
+/* right-panel for login input */
 .right-panel {
   flex: 2;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -172,7 +172,7 @@
   font-weight: 400;
 }
 
-/* FORM STYLING */
+/* form styling */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -261,7 +261,7 @@
   transform: translateX(2px);
 }
 
-/* BUTTON STYLING */
+/* btn styling */
 .login-btn {
   width: 100%;
   padding: 1rem 1.5rem;
@@ -322,7 +322,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* ERROR MESSAGE */
+/* error msg */
 .error-message {
   background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
   color: #dc2626;
@@ -340,7 +340,7 @@
   color: #ef4444;
 }
 
-/* FOOTER */
+/* footer */
 .footer-text {
   position: relative;
   z-index: 2;
@@ -354,7 +354,7 @@
   text-align: center;
 }
 
-/* RESPONSIVE DESIGN */
+/* responsive design */
 @media (max-width: 768px) {
   .login-container {
     flex-direction: column;

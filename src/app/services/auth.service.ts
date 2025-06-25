@@ -3,7 +3,6 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, delay } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User, LoginResponse, PasswordResetResponse } from '../models/user.model';
-import { ErrorService } from './error.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { api } from '../connection';
 import Swal from 'sweetalert2';
@@ -33,7 +32,6 @@ export class AuthService {
 
   constructor(
     private router: Router,
-    private errorService: ErrorService,
     private http: HttpClient,
     private apiEndpoints: VicsApiEndpointsService
   ) {

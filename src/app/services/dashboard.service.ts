@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, map, delay } from 'rxjs/operators';
 import { ChartDataPoint, WeeklyStats, DepartmentVisitor, ChartLegendItem, TimePeriod } from '../models/dashboard.model';
-import { ErrorService } from './error.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { api } from '../connection';
 import Swal from 'sweetalert2';
@@ -75,7 +74,6 @@ export class DashboardService {
   };
 
   constructor(
-    private errorService: ErrorService,
     private http: HttpClient,
     private apiEndpoints: VicsApiEndpointsService
   ) { }
@@ -196,9 +194,6 @@ export class DashboardService {
 
   private handleError(error: HttpErrorResponse, message: string): Observable<never> {
     console.error(error);
-    
-    // For backward compatibility, also use the ErrorService
-    this.errorService.handleHttpError(error);
     
     // Show SweetAlert2 notification
     Swal.fire({
