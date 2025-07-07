@@ -342,16 +342,35 @@
 
 /* footer */
 .footer-text {
-  position: relative;
+  position: absolute;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  text-align: center;
   z-index: 2;
-  margin-top: 2rem;
 }
 
 .footer-text p {
   color: rgba(255, 255, 255, 0.8);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   margin: 0;
-  text-align: center;
+}
+
+.credits-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  margin-left: 0.5rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.credits-link:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+.credits-link i {
+  margin-right: 0.25rem;
 }
 
 /* responsive design */

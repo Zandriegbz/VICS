@@ -7,12 +7,14 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.compo
 import { VisitorLogbookComponent } from './visitor-logbook/visitor-logbook.component';
 import { AuthGuard } from './services/auth.guard';
 import { RoleGuard } from './services/role.guard';
+import { CreditsComponent } from './credits/credits.component';
 
 const routes: Routes = [
   // Public routes
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'credits', component: CreditsComponent },
   
   // Redirect dashboard to admin dashboard with auth guard
   { 
