@@ -268,9 +268,9 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
       this.filteredVisitors = this.allVisitors.filter(visitor => {
         // Search filter
         const matchesSearch = this.searchTerm === '' || 
-          `${visitor.firstname} ${visitor.lastname}`.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          `${visitor.Firstname} ${visitor.Lastname}`.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
           visitor.clientId.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          visitor.agency.toLowerCase().includes(this.searchTerm.toLowerCase());
+          visitor.Agency.toLowerCase().includes(this.searchTerm.toLowerCase());
 
         // Date filter
         const matchesDate = this.selectedDate === '' || visitor.date === this.selectedDate;
