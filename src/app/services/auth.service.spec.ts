@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { VicsApiEndpointsService } from './vics-api-endpoints.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -18,13 +19,15 @@ describe('AuthService', () => {
     apiEndpointsSpyObj.resetPassword.and.returnValue('/auth/reset-password');
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         AuthService,
         { provide: Router, useValue: routerSpyObj },
-        { provide: VicsApiEndpointsService, useValue: apiEndpointsSpyObj }
-      ]
-    });
+        { provide: VicsApiEndpointsService, useValue: apiEndpointsSpyObj },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
     
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);

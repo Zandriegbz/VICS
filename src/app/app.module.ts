@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router'; // ✅ import this
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
 import { AppComponent } from './app.component';
@@ -22,32 +22,27 @@ import { LoadingInterceptor } from './services/loading.interceptor';
 import { CreditsComponent } from './credits/credits.component';
 
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    ForgotPasswordComponent,
-    AdminDashboardComponent,
-    AdminSidebarComponent,
-    AdminNavbarComponent,
-    VisitorLogbookComponent,
-    NotificationModalComponent,
-    AccountSettingsComponent, // ✅ Declare it here
-    AdminLayoutComponent, CreditsComponent
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule, // Added for animations support
-    FormsModule, // ✅ Required for [(ngModel)]
-    RouterModule,       // ✅ this line is important
-    AppRoutingModule,   // ✅ routing config
-    HttpClientModule,   // ✅ HTTP client for API calls
-    NgxSpinnerModule.forRoot({ type: 'ball-scale-multiple' })    // ✅ Loading spinner with default type
-  ],
-  providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        LoginComponent,
+        ForgotPasswordComponent,
+        AdminDashboardComponent,
+        AdminSidebarComponent,
+        AdminNavbarComponent,
+        VisitorLogbookComponent,
+        NotificationModalComponent,
+        AccountSettingsComponent, // ✅ Declare it here
+        AdminLayoutComponent, CreditsComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        BrowserAnimationsModule, // Added for animations support
+        FormsModule, // ✅ Required for [(ngModel)]
+        RouterModule, // ✅ this line is important
+        AppRoutingModule, // ✅ HTTP client for API calls
+        NgxSpinnerModule.forRoot({ type: 'ball-scale-multiple' }) // ✅ Loading spinner with default type
+    ], providers: [
+        { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule { }
