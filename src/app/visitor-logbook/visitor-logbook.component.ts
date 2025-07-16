@@ -7,9 +7,10 @@ import { Subject, interval } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-visitor-logbook',
-  templateUrl: './visitor-logbook.component.html',
-  styleUrls: ['./visitor-logbook.component.css']
+    selector: 'app-visitor-logbook',
+    templateUrl: './visitor-logbook.component.html',
+    styleUrls: ['./visitor-logbook.component.css'],
+    standalone: false
 })
 export class VisitorLogbookComponent implements OnInit, OnDestroy {
   // Filter properties

@@ -3,9 +3,10 @@ import { Notification } from '../models/notification.model';
 import { NotificationService } from '../services/notification.service';
 
 @Component({
-  selector: 'app-notification-modal',
-  templateUrl: './notification-modal.component.html',
-  styleUrls: ['./notification-modal.component.css']
+    selector: 'app-notification-modal',
+    templateUrl: './notification-modal.component.html',
+    styleUrls: ['./notification-modal.component.css'],
+    standalone: false
 })
 export class NotificationModalComponent implements OnInit {
   @Output() closeModal = new EventEmitter<void>();
