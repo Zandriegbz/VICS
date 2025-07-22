@@ -1,5 +1,5 @@
 // src/environments/environment.prod.ts (VICS)
 export const environment = {
   production: true,
-  apiUrl: 'VICS_PRODUCTION_API_URL'
+   apiUrl: 'http://172.16.12.103/TKT/api' // Development API URL
 }; 

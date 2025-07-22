@@ -56,30 +56,21 @@ export class LoginComponent implements OnInit {
       )
       .subscribe({
         next: (result) => {
-          if (result.success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Login Successful!',
-              text: 'Welcome!',
-              timer: 1500,
-              showConfirmButton: false
-            }).then(() => {
-              this.router.navigate([this.returnUrl]);
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Login Failed',
-              text: result.message || 'Invalid username or password. Please try again.',
-              confirmButtonText: 'Try Again'
-            });
-          }
+         Swal.fire({
+            icon: 'success',
+            title: 'Login Successful!',
+            text: `Welcome, ${result.name}!`,
+            timer: 1500,
+            showConfirmButton: false
+          }).then(() => {
+            this.router.navigate([this.returnUrl]);
+          });
         },
         error: (error) => {
           Swal.fire({
             icon: 'error',
             title: 'Login Error',
-            text: 'An unexpected error occurred during login. Please try again later.',
+            text: error.error?.message || 'Invalid username or password. Please try again.',
             confirmButtonText: 'Ok'
           });
           console.error('Login error:', error);

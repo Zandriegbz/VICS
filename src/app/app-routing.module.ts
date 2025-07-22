@@ -35,7 +35,7 @@ const routes: Routes = [
         path: 'visitor-logbook', 
         component: VisitorLogbookComponent,
         canActivate: [RoleGuard],
-        data: { roles: ['admin'] }
+        data: { roles: ['Admin'] }
       },
     ]
   },

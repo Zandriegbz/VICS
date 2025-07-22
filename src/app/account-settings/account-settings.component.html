@@ -8,8 +8,12 @@
     <div class="profile-info">
       <i class="fas fa-user-circle profile-icon"></i>
       <div>
-        <div class="name">Andrew</div>
-        <div class="email">andrewexample.com</div>
+        <div class="name">
+           {{ (user$ | async)?.name || 'Guest' }}
+        </div>
+        <div class="role">
+           {{ (user$ | async)?.role || '' }}
+        </div>
       </div>
     </div>
 

@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router'; // ✅ import this
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
 import { AppComponent } from './app.component';
@@ -31,7 +31,7 @@ import { CreditsComponent } from './credits/credits.component';
         AdminNavbarComponent,
         VisitorLogbookComponent,
         NotificationModalComponent,
-        AccountSettingsComponent, // ✅ Declare it here
+        AccountSettingsComponent,
         AdminLayoutComponent, CreditsComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
@@ -43,6 +43,8 @@ import { CreditsComponent } from './credits/credits.component';
     ], providers: [
         { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
-        provideHttpClient(withInterceptorsFromDi())
+        provideHttpClient( 
+           // withFetch(),
+        withInterceptorsFromDi())
     ] })
 export class AppModule { }

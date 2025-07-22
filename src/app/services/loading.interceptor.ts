@@ -13,6 +13,7 @@ export class LoadingInterceptor implements HttpInterceptor {
   constructor(private spinnerService: SpinnerService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+
     // Skip spinner for excluded URLs
     if (this.shouldSkipSpinner(request.url)) {
       return next.handle(request);

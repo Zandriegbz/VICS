@@ -181,7 +181,7 @@
     <div class="visitor-header card-header" (click)="toggleVisitor(i)">
       <div class="visitor-info">
         <div class="visitor-name-section">
-        <strong>{{ visitor.Lastname }}, {{ visitor.Firstname }} {{visitor.middleInitial}}</strong>
+        <strong>{{ visitor.lastName }}, {{ visitor.firstName }} {{visitor.middleInitial}}</strong>
           <small class="visitor-timestamp">{{ visitor.date | date:'MMM d' }} at {{ visitor.time }}</small>
         </div>
         <i
@@ -210,16 +210,16 @@
           <div class="col-md-6">
             <p><strong>Client ID:</strong> {{ visitor.clientId }}</p>
             <p>
-              <strong>Name:</strong> {{ visitor.Firstname }}
-              {{ visitor.middleInitial }} {{ visitor.Lastname }}
+              <strong>Name:</strong> {{ visitor.firstName }}
+              {{ visitor.middleInitial }} {{ visitor.lastName }}
             </p>
-            <p><strong>Position:</strong> {{ visitor.Position }}</p>
-            <p><strong>Agency:</strong> {{ visitor.Agency }}</p>
+            <p><strong>Position:</strong> {{ visitor.position }}</p>
+            <p><strong>Agency:</strong> {{ visitor.agency }}</p>
           </div>
           <div class="col-md-6">
-            <p><strong>Purpose:</strong> {{ visitor.Purpose }}</p>
-            <p *ngIf="visitor.Purpose?.toLowerCase() === 'other'">
-            <strong>Specific Purpose:</strong> {{ visitor.Specificpurpose }}</p>
+            <p><strong>Purpose:</strong> {{ visitor.purpose }}</p>
+            <!-- <p *ngIf="visitor.Specificpurpose">
+            <strong>Specific Purpose:</strong> {{ visitor.Specificpurpose }}</p> -->
             <p><strong>Date:</strong> {{ visitor.date }}</p>
             <p><strong>Time:</strong> {{ visitor.time }}</p>
           </div>
@@ -228,7 +228,7 @@
       
       <!-- Print button below visitor details -->
       <div class="visitor-print-action">
-        <button class="btn btn-primary">
+        <button class="btn btn-primary" (click)="printCertificate(visitor.clientId)">
           <i class="fas fa-print me-2"></i>
           Print
         </button>

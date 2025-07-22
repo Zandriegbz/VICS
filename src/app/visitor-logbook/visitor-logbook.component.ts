@@ -5,43 +5,45 @@ import { SpinnerService } from '../services/spinner.service';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject, interval } from 'rxjs';
 import Swal from 'sweetalert2';
+import { saveAs } from 'file-saver';
+
 
 @Component({
-    selector: 'app-visitor-logbook',
-    templateUrl: './visitor-logbook.component.html',
-    styleUrls: ['./visitor-logbook.component.css'],
-    standalone: false
+  selector: 'app-visitor-logbook',
+  templateUrl: './visitor-logbook.component.html',
+  styleUrls: ['./visitor-logbook.component.css'],
+  standalone: false
 })
 export class VisitorLogbookComponent implements OnInit, OnDestroy {
   // Filter properties
   searchTerm: string = '';
   selectedDate: string = '';
   selectedCertificateFilter: string = 'all';
-  
+
   // Data arrays
   allVisitors: Visitor[] = [];
   filteredVisitors: Visitor[] = [];
   paginatedVisitors: Visitor[] = [];
-  
+
   // Pagination properties
   currentPage: number = 1;
   itemsPerPage: number = 10;
   totalPages: number = 0;
   customPageInput: string = '';
-  
+
   // Auto-refresh properties
   private destroy$ = new Subject<void>();
   private autoRefreshInterval = 3 * 60 * 1000; // 3 minutes
   lastRefreshTime: Date = new Date();
   nextRefreshTime: Date = new Date();
-  
+
   // Expose Math to template
   Math = Math;
 
   constructor(
     private visitorService: VisitorService,
     private spinnerService: SpinnerService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadVisitorData();
@@ -51,7 +53,7 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Close all visitors when leaving the page
     this.allVisitors.forEach(visitor => visitor.open = false);
-    
+
     // Clean up auto-refresh subscription
     this.destroy$.next();
     this.destroy$.complete();
@@ -63,7 +65,7 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
   private setupAutoRefresh(): void {
     // Update next refresh time
     this.updateNextRefreshTime();
-    
+
     // Set up interval for auto-refresh
     interval(this.autoRefreshInterval)
       .pipe(takeUntil(this.destroy$))
@@ -77,7 +79,7 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
    */
   private autoRefreshData(): void {
     console.log('Auto-refreshing visitor data...');
-    
+
     this.visitorService.getVisitors()
       .pipe(
         finalize(() => {
@@ -88,10 +90,10 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data) => {
           const previousCount = this.allVisitors.length;
-          
+
           // Sort visitors by latest first
           this.allVisitors = this.sortVisitorsByLatest(data);
-          
+
           // Auto-open the latest visitor only if new visitors were added
           const newCount = this.allVisitors.length;
           if (newCount > previousCount) {
@@ -99,7 +101,7 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
             const newVisitorsCount = newCount - previousCount;
             this.showAutoRefreshNotification(newVisitorsCount);
           }
-          
+
           this.applyFilters();
         },
         error: (error) => {
@@ -138,8 +140,6 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
     this.nextRefreshTime = new Date(Date.now() + this.autoRefreshInterval);
   }
 
-
-
   /**
    * Manual refresh with user feedback
    */
@@ -147,7 +147,7 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
     if (!this.spinnerService.isCurrentlyNavigating()) {
       this.spinnerService.show();
     }
-    
+
     this.visitorService.getVisitors()
       .pipe(
         finalize(() => {
@@ -160,9 +160,11 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (data) => {
-          this.allVisitors = data;
+          // Apply descending sort
+          this.allVisitors = this.sortVisitorsByLatest(data);
+          this.autoOpenLatestVisitor();
           this.applyFilters();
-          
+
           Swal.fire({
             toast: true,
             position: 'top-end',
@@ -185,12 +187,13 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
     const diffMs = this.nextRefreshTime.getTime() - Date.now();
     return Math.max(0, Math.ceil(diffMs / (60 * 1000))); // Convert to minutes
   }
-  
+
+
   loadVisitorData(): void {
     if (!this.spinnerService.isCurrentlyNavigating()) {
       this.spinnerService.show();
     }
-    
+
     this.visitorService.getVisitors()
       .pipe(
         finalize(() => {
@@ -205,10 +208,10 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
         next: (data) => {
           // Sort visitors by latest first (date + time)
           this.allVisitors = this.sortVisitorsByLatest(data);
-          
+
           // Auto-open the first (latest) visitor card
           this.autoOpenLatestVisitor();
-          
+
           this.applyFilters();
         },
         error: (error) => {
@@ -225,7 +228,7 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
       // Combine date and time for accurate sorting
       const dateTimeA = new Date(`${a.date} ${a.time}`);
       const dateTimeB = new Date(`${b.date} ${b.time}`);
-      
+
       // Sort in descending order (latest first)
       return dateTimeB.getTime() - dateTimeA.getTime();
     });
@@ -237,7 +240,7 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
   private autoOpenLatestVisitor(): void {
     // Close all visitors first
     this.allVisitors.forEach(visitor => visitor.open = false);
-    
+
     // Open the first visitor (latest) if exists
     if (this.allVisitors.length > 0) {
       this.allVisitors[0].open = true;
@@ -247,12 +250,12 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
   toggleVisitor(index: number): void {
     // Find the original visitor in the main array using the paginated visitor
     const paginatedVisitor = this.paginatedVisitors[index];
-    const originalIndex = this.allVisitors.findIndex(v => 
-      v.clientId === paginatedVisitor.clientId && 
-      v.date === paginatedVisitor.date && 
+    const originalIndex = this.allVisitors.findIndex(v =>
+      v.clientId === paginatedVisitor.clientId &&
+      v.date === paginatedVisitor.date &&
       v.time === paginatedVisitor.time
     );
-    
+
     if (originalIndex !== -1) {
       this.allVisitors[originalIndex].open = !this.allVisitors[originalIndex].open;
       this.updatePagination();
@@ -263,15 +266,15 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
     if (!this.spinnerService.isCurrentlyNavigating()) {
       this.spinnerService.show();
     }
-    
+
     // Use setTimeout for better UX
     setTimeout(() => {
       this.filteredVisitors = this.allVisitors.filter(visitor => {
         // Search filter
-        const matchesSearch = this.searchTerm === '' || 
-          `${visitor.Firstname} ${visitor.Lastname}`.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        const matchesSearch = this.searchTerm === '' ||
+          `${visitor.firstName} ${visitor.lastName}`.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
           visitor.clientId.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          visitor.Agency.toLowerCase().includes(this.searchTerm.toLowerCase());
+          visitor.agency.toLowerCase().includes(this.searchTerm.toLowerCase());
 
         // Date filter
         const matchesDate = this.selectedDate === '' || visitor.date === this.selectedDate;
@@ -286,11 +289,11 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
 
         return matchesSearch && matchesDate && matchesCertificate;
       });
-      
+
       // Reset to first page when filters change
       this.currentPage = 1;
       this.updatePagination();
-      
+
       if (!this.spinnerService.isCurrentlyNavigating()) {
         this.spinnerService.hide();
       }
@@ -327,15 +330,63 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
     if (!this.spinnerService.isCurrentlyNavigating()) {
       this.spinnerService.show();
     }
-    
+
     // Simulate print processing
     setTimeout(() => {
       console.log('Printing all filtered visitors:', this.filteredVisitors);
-      
+
       if (!this.spinnerService.isCurrentlyNavigating()) {
         this.spinnerService.hide();
       }
     }, 1500);
+  }
+
+  /**
+   * Print certificate for a specific visitor
+   */
+  printCertificate(visitorId: string): void {
+    if (!this.spinnerService.isCurrentlyNavigating()) {
+      this.spinnerService.show();
+    }
+
+    this.visitorService.getVisitorCertificate(visitorId).subscribe({
+      next: (blob) => {
+        console.log(`Certificate blob received for visitor ID: ${visitorId}`);
+
+        const fileURL = window.URL.createObjectURL(blob);
+
+        const printWindow = window.open(fileURL);
+
+        if (printWindow) {
+          printWindow.addEventListener('load', () => {
+            printWindow.focus();
+            printWindow.print();
+          });
+        } else {
+          saveAs(blob, `visitor_certificate_${visitorId}.pdf`);
+        }
+
+        this.spinnerService.hide();
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Certificate Ready',
+          text: `Certificate for visitor ID ${visitorId} has been sent to print.`,
+          confirmButtonText: 'Ok'
+        });
+      },
+      error: (err) => {
+        console.error('Print certificate failed', err);
+        this.spinnerService.hide();
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Print Failed',
+          text: `Could not print certificate for visitor ID ${visitorId}.`,
+          confirmButtonText: 'Ok'
+        });
+      }
+    });
   }
 
   goToPage(page: number): void {
@@ -343,11 +394,11 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
       if (!this.spinnerService.isCurrentlyNavigating()) {
         this.spinnerService.show();
       }
-      
+
       setTimeout(() => {
         this.currentPage = page;
         this.updatePagination();
-        
+
         if (!this.spinnerService.isCurrentlyNavigating()) {
           this.spinnerService.hide();
         }
@@ -378,7 +429,7 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
   getPageNumbers(): number[] {
     const pages: number[] = [];
     const maxPagesToShow = 5;
-    
+
     if (this.totalPages <= maxPagesToShow) {
       // If total pages is less than max pages to show, show all pages
       for (let i = 1; i <= this.totalPages; i++) {
@@ -388,18 +439,19 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
       // Calculate range to show around current page
       let start = Math.max(1, this.currentPage - Math.floor(maxPagesToShow / 2));
       let end = start + maxPagesToShow - 1;
-      
+
       // Adjust if end exceeds total pages
       if (end > this.totalPages) {
         end = this.totalPages;
         start = Math.max(1, end - maxPagesToShow + 1);
       }
-      
+
       for (let i = start; i <= end; i++) {
         pages.push(i);
       }
     }
-    
+
     return pages;
   }
+
 }

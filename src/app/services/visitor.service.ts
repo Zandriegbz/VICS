@@ -1,76 +1,81 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { Visitor } from '../models/visitor.model';
-
 import { catchError, map } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import Swal from 'sweetalert2';
+import { VicsApiEndpointsService } from './vics-api-endpoints.service';
 
-interface JsonBinResponse {
-  record: {
-    Visitors: Array<Omit<Visitor, 
-      'id' | 'open' | 'status' | 'date' | 'time' | 'clientId' | 'middleInitial'
-    >>;
-  };
-  metadata?: any;
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class VisitorService {
-  private binId = '6843bac08561e97a502086bf';
-  private apiUrl = `https://api.jsonbin.io/v3/b/${this.binId}`;
+  private apiUrl2 = environment.apiUrl;
 
   constructor(
-    private http: HttpClient
-  ) { }
+    private http: HttpClient,
+    private api: VicsApiEndpointsService
+  ) {}
 
-  getVisitors(): Observable<Visitor[]> {
-    return this.http.get<JsonBinResponse>(`${this.apiUrl}/latest`).pipe(
-      map(response => {
-        if (!response.record?.Visitors) {
-          throw new Error('Invalid data format: Missing Visitors array');
-        }
-        
-        // Reverse the array to get LIFO ordering (newest first)
-        const reversedVisitors = [...response.record.Visitors].reverse();
-        
-        return reversedVisitors.map((visitor, index) => 
-          this.transformVisitor(visitor, this.generateId(index))
-        );
-      }),
-      catchError(error => {
-        handleError(error);
-        return throwError(() => new Error('Failed to fetch visitors'));
-      })
-    );
-  }
+getVisitors(): Observable<Visitor[]> {
+  return this.http.get<Visitor[]>(`${this.apiUrl2}${this.api.getVisitors()}`).pipe(
+    map(visitors => {
+      if (!Array.isArray(visitors)) {
+        throw new Error('Invalid data format: Expected an array of visitors');
+      }
+
+      const reversedVisitors = [...visitors].reverse();
+
+      return reversedVisitors.map((visitor, index) =>
+        this.transformVisitor(visitor, this.generateId(index))
+      );
+    }),
+    catchError(handleError('Fetching visitors'))
+  );
+}
+
+
+  getVisitorCertificate(visitorId: string): Observable<Blob> {
+  return this.http.get(`${this.apiUrl2}${this.api.getVisitorCertificate(visitorId)}`, {
+     responseType: 'blob' ,
+      headers : new  HttpHeaders  ({
+        'Accept': 'application/pdf' 
+      })  
+    });
+}
 
   private transformVisitor(
-    visitor: Omit<Visitor, 'id' | 'open' | 'status' | 'date' | 'time' | 'clientId' | 'middleInitial'>,
-    id: string
-  ): Visitor {
-    const dt = new Date(visitor.DateTime);
-    return {
-      ...visitor,
-      id: id,
-      open: false,
-      status: visitor.CertificateNeeded === 'Yes' ? 'Printed' : 'Not Printed',
-      date: dt.toISOString().split('T')[0],
-      time: dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      clientId: 'CL' + id,
-      middleInitial: visitor.Middlename ? visitor.Middlename[0] + '.' : '',
-      // Ensure all required fields have defaults
-      Suffix: visitor.Suffix || '',
-      Specificpurpose: visitor.Specificpurpose || ''
-    };
-  }
+  visitor: any, // Use `any` if needed to handle mismatches
+  id: string
+): Visitor {
+  const dt = new Date(visitor.dateTimeCreated);
+
+  return {
+    ...visitor,
+    id: id,
+    open: false,
+    status: visitor.isPrinted ? 'Printed' : 'Not Printed',
+    date: dt.toISOString().split('T')[0],
+    time: dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    clientId: visitor.clientID || 'CL' + id,
+    middleInitial: visitor.middleName ? visitor.middleName[0] + '.' : '',
+    Suffix: visitor.suffixName || '',
+    Specificpurpose: visitor.purpose || ''
+  };
+}
 
   private generateId(index: number): string {
     return index.toString().padStart(4, '0');
   }
 }
 
-function handleError(error: any) {
-  throw new Error('Function not implemented.');
+function handleError(operation: string) {
+  return (error: any) => {
+    console.error(`${operation} failed:`, error);
+    return throwError(() => new Error(`${operation} failed: ${error.message || error}`));
+  };
 }
+
+

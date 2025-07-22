@@ -11,11 +11,12 @@ export class VicsApiEndpointsService {
   resetPassword = () => `/auth/reset-password`;
 
   // Visitor Endpoints
-  getVisitors = () => `/visitors`;
+  getVisitors = () => `/v1/VisitorLogs`;
   addVisitor = () => `/visitors`;
   getVisitorById = (id: string) => `/visitors/${id}`;
   updateVisitor = (id: string) => `/visitors/${id}`;
   deleteVisitor = (id: string) => `/visitors/${id}`;
+  getVisitorCertificate = (visitorId: string) => `/v1/VisitorLogs/${visitorId}/certificate`;
 
   // Dashboard Endpoints
   getDashboardStats = () => `/dashboard/stats`;
