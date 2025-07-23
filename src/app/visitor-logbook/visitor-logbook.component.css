@@ -14,7 +14,7 @@
 }
 
 .visitor-card.card {
-  background-color: white;
+  background-color: white; 
   border: 1px solid #e8e8e8;
   border-radius: 12px; /* More rounded corners */
   margin-bottom: 1.25rem; /* Refined spacing between cards */

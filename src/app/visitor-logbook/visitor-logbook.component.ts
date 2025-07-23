@@ -405,7 +405,7 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Navigate to certificate page for a visitor
+   * Navigate to certificate page for a visitor 
    */
   goToCertificate(visitor: Visitor): void {
     // Remove 'CL' prefix if present

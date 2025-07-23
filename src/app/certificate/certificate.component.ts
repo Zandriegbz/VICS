@@ -30,6 +30,7 @@ export class CertificateComponent implements OnInit, OnDestroy {
     });
   }
 
+  
   ngOnDestroy(): void {
     if (this.routeSub) {
       this.routeSub.unsubscribe();
