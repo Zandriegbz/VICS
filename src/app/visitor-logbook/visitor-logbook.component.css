@@ -32,31 +32,75 @@
 /* Header: Two columns: 70% left, 30% right */
 .visitor-header.card-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 1.75rem; /* More generous padding */
-  background: #B0303D; /* VICS brand color for header */
-  color: white; /* White text for contrast */
+  padding: 1.25rem 1.75rem;
+  background: #B0303D;
+  color: white;
   cursor: pointer;
-  border-bottom: none; /* Remove default border */
+  border-bottom: none;
   transition: background-color 0.2s ease;
 }
 
-.visitor-card:not(:last-child) .visitor-header.card-header {
-   border-bottom: none; /* Remove borders between headers */
-}
-
-.visitor-card .visitor-details + .visitor-header.card-header {
-    border-top: 1px solid #f0f0f0;
-}
-
-.visitor-info {
-  flex-grow: 1;
+.visitor-header-col {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  min-width: 0;
+}
+
+.visitor-header-name {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.visitor-header-name strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: white;
+}
+
+.visitor-header-meta {
+  flex: 0 0 200px;
+  min-width: 120px;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.visitor-header-badge {
+  flex: 0 0 180px;
+  min-width: 140px;
+  justify-content: flex-end;
+  gap: 1.5rem;
+}
+
+.visitor-header-badge .chevron-icon {
+  font-size: 1.5em;
+  color: #fff;
+  margin-left: 0.75rem;
+  transition: color 0.2s, transform 0.2s;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.visitor-header-badge .chevron-icon:hover {
+  color: #E38383;
+  transform: scale(1.15);
+}
+
+.visitor-timestamp {
+  display: inline;
   font-size: 1rem;
-  font-weight: 500;
+  color: #fff;
+  font-weight: 400;
+  opacity: 0.85;
+  letter-spacing: 0.5px;
+  margin: 0;
+  padding: 0;
 }
 
 .visitor-name-section {
@@ -72,33 +116,24 @@
   color: white; /* White text for header */
 }
 
-.visitor-timestamp {
-  font-size: 0.8rem;
-  color: #6c757d; /* text-muted */
-  margin-left: auto;
-  padding-left: 1rem;
+.visitor-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 220px;
+  gap: 0.75rem;
 }
 
-.visitor-name-section a {
-  color: #697a8d;
-  transition: color 0.3s ease;
-  font-size: 0.9rem; /* Adjust icon size */
-  margin-left: 10px;
-}
-
-.visitor-name-section a:hover {
-  color: #B0303D;
-}
-
-/* Status badge styling */
 .visitor-status.badge {
   text-align: center;
-  padding: 0.5em 1em; /* More padding for badges */
+  padding: 0.5em 1em;
   font-weight: 600;
   font-size: 0.75rem;
-  border-radius: 20px; /* More rounded badges */
+  border-radius: 20px;
   text-transform: uppercase;
-  letter-spacing: 0.5px; /* Better letter spacing */
+  letter-spacing: 0.5px;
+  min-width: 90px;
+  display: inline-block;
 }
 
 /* Print Status Badge Styles */

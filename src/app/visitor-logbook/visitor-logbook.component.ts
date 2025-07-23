@@ -5,6 +5,7 @@ import { SpinnerService } from '../services/spinner.service';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { Subject, interval } from 'rxjs';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-visitor-logbook',
@@ -39,7 +40,8 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
 
   constructor(
     private visitorService: VisitorService,
-    private spinnerService: SpinnerService
+    private spinnerService: SpinnerService,
+    private router: Router // Inject Router
   ) {}
 
   ngOnInit(): void {
@@ -400,5 +402,14 @@ export class VisitorLogbookComponent implements OnInit, OnDestroy {
     }
     
     return pages;
+  }
+
+  /**
+   * Navigate to certificate page for a visitor
+   */
+  goToCertificate(visitor: Visitor): void {
+    // Remove 'CL' prefix if present
+    const id = visitor.clientId.startsWith('CL') ? visitor.clientId.substring(2) : visitor.clientId;
+    this.router.navigate(['/certificate', id]);
   }
 }

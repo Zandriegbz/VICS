@@ -179,28 +179,29 @@
 
   <div *ngFor="let visitor of paginatedVisitors; let i = index" class="visitor-card card mb-3">
     <div class="visitor-header card-header" (click)="toggleVisitor(i)">
-      <div class="visitor-info">
-        <div class="visitor-name-section">
+      <div class="visitor-header-col visitor-header-name">
         <strong>{{ visitor.Lastname }}, {{ visitor.Firstname }} {{visitor.middleInitial}}</strong>
-          <small class="visitor-timestamp">{{ visitor.date | date:'MMM d' }} at {{ visitor.time }}</small>
-        </div>
+      </div>
+      <div class="visitor-header-col visitor-header-meta d-flex align-items-center gap-2">
+        <small class="visitor-timestamp">{{ visitor.date | date:'MMM d' }} at {{ visitor.time }}</small>
+      </div>
+      <div class="visitor-header-col visitor-header-badge d-flex align-items-center gap-2">
+        <span
+          class="visitor-status badge"
+          [ngClass]="{
+            'badge-success': visitor.status === 'Printed',
+            'badge-warning': visitor.status === 'Not Printed'
+          }"
+        >
+          {{ visitor.status }}
+        </span>
         <i
-          class="fas chevron-icon me-3"
+          class="fas chevron-icon"
           [ngClass]="{
             'fa-chevron-down': !visitor.open,
             'fa-chevron-up': visitor.open
           }"
         ></i>
-      </div>
-
-      <div
-        class="visitor-status badge"
-        [ngClass]="{
-          'badge-success': visitor.status === 'Printed',
-          'badge-warning': visitor.status === 'Not Printed'
-        }"
-      >
-        {{ visitor.status }}
       </div>
     </div>
 
@@ -227,7 +228,11 @@
       </div>
       
       <!-- Print button below visitor details -->
-      <div class="visitor-print-action">
+      <div class="visitor-print-action d-flex gap-2">
+        <button class="btn btn-outline-secondary" (click)="goToCertificate(visitor)">
+          <i class="fas fa-certificate me-2"></i>
+          Certificate
+        </button>
         <button class="btn btn-primary">
           <i class="fas fa-print me-2"></i>
           Print
