@@ -8,6 +8,7 @@ import { VisitorLogbookComponent } from './visitor-logbook/visitor-logbook.compo
 import { AuthGuard } from './services/auth.guard';
 import { RoleGuard } from './services/role.guard';
 import { CreditsComponent } from './credits/credits.component';
+import { CertificateComponent } from './certificate/certificate.component';
 
 const routes: Routes = [
   // Public routes
@@ -15,6 +16,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'credits', component: CreditsComponent },
+  { path: 'certificate/:id', component: CertificateComponent },
   
   // Redirect dashboard to admin dashboard with auth guard
   { 

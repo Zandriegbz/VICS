@@ -1,0 +1,101 @@
+<div class="certificate-bg">
+  <div class="certificate-container" *ngIf="visitor">
+    <div class="certificate-content">
+      
+      <!-- Header with Logos -->
+      <div class="certificate-header">
+        <div class="logo-left">
+          <img src="assets/organization-logos/davnor_logo.png" alt="Davnor Logo" class="header-logo">
+        </div>
+        <div class="title-section">
+          <h1>CERTIFICATE OF APPEARANCE</h1>
+          <div class="reference-line">
+            <span>REFERENCE #: </span><span class="ref-number">{{ visitor.id }}</span>
+          </div>
+        </div>
+        <div class="logo-right">
+          <img src="assets/organization-logos/hris_logo.png" alt="HRIS Logo" class="header-logo">
+        </div>
+      </div>
+
+      <!-- Certificate Body -->
+      <div class="certificate-body">
+        
+        <!-- Presentation Text -->
+        <div class="presentation-text">
+          <span class="presentation-banner">THE CERTIFICATE IS PRESENTED TO:</span>
+        </div>
+
+        <!-- Visitor Name Section -->
+        <div class="name-section">
+          <div class="full-name">
+            {{ visitor.Firstname }} {{ visitor.Middlename ? visitor.Middlename.charAt(0) + '.' : visitor.middleInitial }} {{ visitor.Lastname }}{{ visitor.Suffix ? ' ' + visitor.Suffix : '' }}
+          </div>
+        </div>
+
+        <!-- Certificate Text -->
+        <div class="certificate-text">
+          <p>This person appeared at the office indicated above on the specified date and time. This certificate serves as proof of visit and can be verified through the VICS system.</p>
+        </div>
+
+        <!-- Visitor Details Grid -->
+        <div class="details-grid">
+          <div class="detail-row">
+            <div class="detail-item">
+              <div class="detail-label">AGENCY/ORGANIZATION</div>
+              <div class="detail-value">{{ visitor.Agency }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">POSITION</div>
+              <div class="detail-value">{{ visitor.Position }}</div>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-item">
+              <div class="detail-label">OFFICE VISITED</div>
+              <div class="detail-value">{{ visitor.Purpose }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">PURPOSE OF VISIT</div>
+              <div class="detail-value">{{ visitor.Specificpurpose || visitor.Purpose }}</div>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-item">
+              <div class="detail-label">DATE OF VISIT</div>
+              <div class="detail-value">{{ visitor.date | date:'longDate' }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">TIME OF VISIT</div>
+              <div class="detail-value">{{ visitor.time }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="certificate-footer">
+          <div class="date-section">
+            <div class="date-value">{{ currentDate | date:'longDate' }}</div>
+            <div class="date-line"></div>
+            <div class="date-label">Date</div>
+          </div>
+          
+          <div class="signature-section">
+            <div class="signature-image">
+              <img src="assets/signature.png" alt="Signature" class="signature-img">
+            </div>
+            <div class="signature-name">EDWIN A. PALERO, MPA, MHRM</div>
+            <div class="signature-line"></div>
+            <div class="signature-title">PG DEPARTMENT HEAD</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

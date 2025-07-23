@@ -61,8 +61,9 @@
 
 .visitor-name-section {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
+  width: 100%;
 }
 
 .visitor-name-section strong {
@@ -72,9 +73,21 @@
 }
 
 .visitor-timestamp {
-  color: rgba(255, 255, 255, 0.9); /* Slightly transparent white for timestamp */
-  font-size: 0.875rem;
-  font-weight: 400;
+  font-size: 0.8rem;
+  color: #6c757d; /* text-muted */
+  margin-left: auto;
+  padding-left: 1rem;
+}
+
+.visitor-name-section a {
+  color: #697a8d;
+  transition: color 0.3s ease;
+  font-size: 0.9rem; /* Adjust icon size */
+  margin-left: 10px;
+}
+
+.visitor-name-section a:hover {
+  color: #B0303D;
 }
 
 /* Status badge styling */

@@ -20,6 +20,7 @@ import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { TokenInterceptor } from './services/token.interceptor';
 import { LoadingInterceptor } from './services/loading.interceptor';
 import { CreditsComponent } from './credits/credits.component';
+import { CertificateComponent } from './certificate/certificate.component';
 
 
 @NgModule({
@@ -33,7 +34,7 @@ import { CreditsComponent } from './credits/credits.component';
     VisitorLogbookComponent,
     NotificationModalComponent,
     AccountSettingsComponent, // ✅ Declare it here
-    AdminLayoutComponent, CreditsComponent
+    AdminLayoutComponent, CreditsComponent, CertificateComponent
   ],
   imports: [
     BrowserModule,

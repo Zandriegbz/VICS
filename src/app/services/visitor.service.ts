@@ -46,6 +46,18 @@ export class VisitorService {
     );
   }
 
+  getVisitor(id: string): Observable<Visitor> {
+    return this.getVisitors().pipe(
+      map(visitors => {
+        const visitor = visitors.find(v => v.id === id);
+        if (!visitor) {
+          throw new Error(`Visitor with id ${id} not found`);
+        }
+        return visitor;
+      })
+    );
+  }
+
   private transformVisitor(
     visitor: Omit<Visitor, 'id' | 'open' | 'status' | 'date' | 'time' | 'clientId' | 'middleInitial'>,
     id: string
@@ -72,5 +84,7 @@ export class VisitorService {
 }
 
 function handleError(error: any) {
-  throw new Error('Function not implemented.');
+  console.error('API Error:', error);
+  // In a real app, you might use a more sophisticated error handling strategy,
+  // like a remote logging service or user-facing notifications.
 }
